@@ -1,4 +1,4 @@
-package io.github.koryl.contactsrest;
+package io.github.koryl.contacts;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

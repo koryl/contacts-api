@@ -1,4 +1,4 @@
-package io.github.koryl.contactsrest;
+package io.github.koryl.contacts;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
