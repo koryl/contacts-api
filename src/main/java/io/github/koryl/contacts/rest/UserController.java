@@ -3,11 +3,9 @@ package io.github.koryl.contacts.rest;
 import io.github.koryl.contacts.domain.dto.UserDto;
 import io.github.koryl.contacts.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -33,4 +31,15 @@ public class UserController {
         return userService.getUserById(id);
     }
 
+    @PostMapping
+    public UserDto createUser(@Valid @RequestBody UserDto user) {
+
+        return userService.createNewUser(user);
+    }
+
+    @PutMapping("/{id}")
+    public UserDto updateUser(@PathVariable("id") Long id, @Valid @RequestBody UserDto user) {
+
+        return userService.updateUserWithId(id, user);
+    }
 }

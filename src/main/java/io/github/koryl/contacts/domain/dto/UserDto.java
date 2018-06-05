@@ -11,7 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 public class UserDto {
 
-    @NotEmpty
     private long userId;
 
     @NotEmpty
@@ -30,4 +29,14 @@ public class UserDto {
     private String pesel;
 
     private List<Contact> contacts;
+
+    public UserDto(@NotEmpty String firstName, @NotEmpty String lastName, @NotEmpty String gender, @NotEmpty String birthDate, @NotEmpty String pesel, List<Contact> contacts) {
+
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.gender = gender;
+        this.birthDate = birthDate;
+        this.pesel = pesel;
+        this.contacts = contacts;
+    }
 }
