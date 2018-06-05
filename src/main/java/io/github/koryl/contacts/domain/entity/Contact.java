@@ -21,4 +21,7 @@ public class Contact {
     @Column(name = "contact_value")
     private String contactValue;
 
+    @JoinColumn(name = "user_id")
+    private Long userId;
+
 }

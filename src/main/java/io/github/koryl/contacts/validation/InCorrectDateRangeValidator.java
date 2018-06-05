@@ -5,7 +5,7 @@ import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-public class CorrectDateRangeValidator implements ConstraintValidator<InCorrectDateRange, LocalDate> {
+public class InCorrectDateRangeValidator implements ConstraintValidator<InCorrectDateRange, LocalDate> {
 
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -19,6 +19,8 @@ public class CorrectDateRangeValidator implements ConstraintValidator<InCorrectD
 
         final LocalDate min = LocalDate.parse(constraintAnnotation.min(), dateFormatter);
         final LocalDate max = LocalDate.now();
-        return value == null || (value.isAfter(min) && value.isBefore(max));
+
+        if (value == null) return false;
+        else return ((value.isEqual(min) || value.isAfter(min)) && (value.isEqual(max) || value.isBefore(max)));
     }
 }

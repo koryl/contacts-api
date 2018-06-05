@@ -1,6 +1,7 @@
 package io.github.koryl.contacts.domain.dto;
 
 import io.github.koryl.contacts.domain.entity.Contact;
+import io.github.koryl.contacts.validation.Gender;
 import io.github.koryl.contacts.validation.InCorrectDateRange;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,13 +20,15 @@ public class UserDto {
     private long userId;
 
     @NotEmpty
+    @Size(max = 45)
     private String firstName;
 
     @NotEmpty
+    @Size(max = 45)
     private String lastName;
 
-    @NotEmpty
-    private String gender;
+    @Gender
+    private Character gender;
 
     @InCorrectDateRange
     private LocalDate birthDate;
