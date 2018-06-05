@@ -1,6 +1,5 @@
 package io.github.koryl.contacts.domain.dto;
 
-import io.github.koryl.contacts.domain.entity.Contact;
 import io.github.koryl.contacts.validation.Gender;
 import io.github.koryl.contacts.validation.InCorrectDateRange;
 import lombok.AllArgsConstructor;
@@ -10,7 +9,6 @@ import org.hibernate.validator.constraints.pl.PESEL;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,21 +18,19 @@ public class UserDto {
     private long userId;
 
     @NotEmpty
-    @Size(max = 45)
+    @Size(max = 50)
     private String firstName;
 
     @NotEmpty
-    @Size(max = 45)
+    @Size(max = 50)
     private String lastName;
 
     @Gender
-    private Character gender;
+    private char gender;
 
     @InCorrectDateRange
     private LocalDate birthDate;
 
     @PESEL
     private String pesel;
-
-    private List<Contact> contacts;
 }

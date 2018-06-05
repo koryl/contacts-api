@@ -79,8 +79,7 @@ public class UserService {
                 rawUser.getLastName(),
                 rawUser.getGender(),
                 rawUser.getBirthDate(),
-                rawUser.getPesel(),
-                rawUser.getContacts());
+                rawUser.getPesel());
     }
 
     private User fromUserDtoTransferToDb(UserDto userDto) {
@@ -91,7 +90,6 @@ public class UserService {
         user.setGender(userDto.getGender());
         user.setBirthDate(userDto.getBirthDate());
         user.setPesel(userDto.getPesel());
-        user.setContacts(userDto.getContacts());
 
         return user;
     }
@@ -103,7 +101,6 @@ public class UserService {
         userToUpdate.setGender(updatingUserData.getGender());
         userToUpdate.setBirthDate(updatingUserData.getBirthDate());
         userToUpdate.setPesel(updatingUserData.getPesel());
-        userToUpdate.setContacts(updatingUserData.getContacts());
 
         return userToUpdate;
     }
