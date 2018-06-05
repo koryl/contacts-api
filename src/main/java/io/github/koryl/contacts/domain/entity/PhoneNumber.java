@@ -1,32 +1,26 @@
 package io.github.koryl.contacts.domain.entity;
 
-import io.github.koryl.contacts.domain.dto.ContactType;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
-@Entity
-@Table(name = "contacts")
 @Data
-public class Contact {
+@Table(name = "phone_numbers")
+@Entity
+public class PhoneNumber {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "contact_type")
-    private ContactType contactType;
-
-    @Column(name = "contact_value")
-    private String contactValue;
+    @Column(name = "phone_number", unique = true, length = 20)
+    private String phone_number;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
-
 }

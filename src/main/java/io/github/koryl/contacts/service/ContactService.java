@@ -1,6 +1,7 @@
 package io.github.koryl.contacts.service;
 
 import io.github.koryl.contacts.dao.ContactRepository;
+import io.github.koryl.contacts.dao.EmailAddressRepository;
 import io.github.koryl.contacts.dao.UserRepository;
 import io.github.koryl.contacts.domain.dto.ContactDto;
 import io.github.koryl.contacts.domain.entity.Contact;
@@ -16,13 +17,15 @@ import java.util.stream.Collectors;
 public class ContactService {
 
     private final ContactRepository contactRepository;
+    private final EmailAddressRepository emailAddressRepository;
     private final UserRepository userRepository;
 
     @Autowired
-    public ContactService(ContactRepository contactRepository, UserRepository userRepository) {
+    public ContactService(ContactRepository contactRepository, UserRepository userRepository, EmailAddressRepository emailAddressRepository) {
 
         this.contactRepository = contactRepository;
         this.userRepository = userRepository;
+        this.emailAddressRepository = emailAddressRepository;
     }
 
     public List<ContactDto> getContactsOfUser(Long id) {

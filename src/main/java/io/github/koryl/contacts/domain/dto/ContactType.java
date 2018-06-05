@@ -1,4 +1,4 @@
-package io.github.koryl.contacts.domain.entity;
+package io.github.koryl.contacts.domain.dto;
 
 public enum ContactType {
 

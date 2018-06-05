@@ -9,13 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
+import static java.util.Objects.*;
 import static java.util.stream.Collectors.*;
 
 @Service
 @Slf4j
 public class UserService {
+
+    private static final String MIN_DATE = "1918-01-01";
 
     private UserRepository userRepository;
 
@@ -70,6 +75,36 @@ public class UserService {
         userRepository.delete(rawUser);
         log.info("User with id: " + rawUser.getId() + "was deleted.");
     }
+
+
+
+    public List<UserDto> findPeopleByBirthDateBetween(String from, String to) {
+
+        LocalDate fromDate;
+        LocalDate toDate;
+
+        if (isNull(from) || Objects.equals(from, "")) {
+            fromDate = LocalDate.parse(MIN_DATE);
+        } else {
+            fromDate = LocalDate.parse(from);
+        }
+
+        if (isNull(to) || Objects.equals(from, "")) {
+            toDate = LocalDate.now();
+        } else {
+            toDate = LocalDate.parse(to);
+        }
+
+        List<User> rawUsers = userRepository.findUsersByBirthDateAfterAndBirthDateBefore(fromDate, toDate);
+
+        log.info("It was found " + rawUsers.size() + " users having a birth day in this range.");
+
+        return rawUsers
+                .stream()
+                .map(this::fromDbTransferToUserDto)
+                .collect(toList());
+    }
+
 
     private UserDto fromDbTransferToUserDto(User rawUser) {
 

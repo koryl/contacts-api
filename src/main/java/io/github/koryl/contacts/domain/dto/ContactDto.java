@@ -1,6 +1,5 @@
 package io.github.koryl.contacts.domain.dto;
 
-import io.github.koryl.contacts.domain.entity.ContactType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
