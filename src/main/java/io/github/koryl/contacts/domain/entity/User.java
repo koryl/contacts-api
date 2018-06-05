@@ -3,6 +3,7 @@ package io.github.koryl.contacts.domain.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class User {
     private String gender;
 
     @Column(name = "birth_date")
-    private String birthDate;
+    private LocalDate birthDate;
 
     @Column(name = "pesel")
     private String pesel;
