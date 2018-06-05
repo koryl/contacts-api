@@ -1,0 +1,39 @@
+package io.github.koryl.contacts.service;
+
+import io.github.koryl.contacts.dao.ContactRepository;
+import io.github.koryl.contacts.dao.UserRepository;
+import io.github.koryl.contacts.domain.dto.ContactDto;
+import io.github.koryl.contacts.domain.entity.Contact;
+import io.github.koryl.contacts.domain.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class ContactService {
+
+    private final ContactRepository contactRepository;
+    private final UserRepository userRepository;
+
+    @Autowired
+    public ContactService(ContactRepository contactRepository, UserRepository userRepository) {
+
+        this.contactRepository = contactRepository;
+        this.userRepository = userRepository;
+    }
+
+    public List<ContactDto> getContactsOfUser(Long id) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User with id: " + id + " not found."));
+        List<Contact> rawContacts = contactRepository.findByUser(user);
+
+        return rawContacts
+                .stream()
+                .map(e -> new ContactDto(e.getContactType(), e.getContactValue()))
+                .collect(Collectors.toList());
+    }
+}

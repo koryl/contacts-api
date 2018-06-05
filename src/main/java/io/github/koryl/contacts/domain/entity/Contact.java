@@ -1,6 +1,8 @@
 package io.github.koryl.contacts.domain.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -20,5 +22,10 @@ public class Contact {
 
     @Column(name = "contact_value")
     private String contactValue;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private User user;
 
 }

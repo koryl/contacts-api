@@ -3,8 +3,7 @@ package io.github.koryl.contacts.domain.entity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -16,22 +15,21 @@ public class User {
     @Column(name = "id")
     private long id;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", length = 50)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", length = 50)
     private String lastName;
 
-    @Column(name = "gender")
-    private String gender;
+    @Column(name = "gender", length = 1)
+    private char gender;
 
     @Column(name = "birth_date")
-    private String birthDate;
+    private LocalDate birthDate;
 
     @Column(name = "pesel")
     private String pesel;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Contact> contacts = new ArrayList<>();
-
+//    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//    private List<Contact> contacts = new ArrayList<>();
 }
