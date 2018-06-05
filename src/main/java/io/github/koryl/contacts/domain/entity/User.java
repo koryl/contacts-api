@@ -29,7 +29,4 @@ public class User {
 
     @Column(name = "pesel")
     private String pesel;
-
-//    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    private List<Contact> contacts = new ArrayList<>();
 }

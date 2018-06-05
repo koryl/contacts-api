@@ -33,7 +33,33 @@ public class ContactService {
 
         return rawContacts
                 .stream()
-                .map(e -> new ContactDto(e.getContactType(), e.getContactValue()))
+                .map(e ->
+                        ContactDto.builder()
+                                .id(e.getId())
+                                .contactType(e.getContactType())
+                                .contactValue(e.getContactValue())
+                                .userId(e.getUser().getId())
+                                .build())
                 .collect(Collectors.toList());
+    }
+
+    public ContactDto createNewContact(Long id, ContactDto contactDto) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User with id: " + id + " not found."));
+
+        Contact contact = new Contact();
+        contact.setContactType(contactDto.getContactType());
+        contact.setContactValue(contactDto.getContactValue());
+        contact.setUser(user);
+
+        Contact savedContact = contactRepository.save(contact);
+
+        return ContactDto.builder()
+                .id(savedContact.getId())
+                .contactType(savedContact.getContactType())
+                .contactValue(savedContact.getContactValue())
+                .userId(savedContact.getUser().getId())
+                .build();
     }
 }
