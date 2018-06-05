@@ -63,6 +63,14 @@ public class UserService {
         return fromDbTransferToUserDto(updatedUser);
     }
 
+    public void deleteUserWithId(Long id) {
+
+        User rawUser = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User with id: " + id + " not found."));
+        userRepository.delete(rawUser);
+        log.info("User with id: " + rawUser.getId() + "was deleted.");
+    }
+
     private UserDto fromDbTransferToUserDto(User rawUser) {
 
         return new UserDto(

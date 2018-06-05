@@ -31,7 +31,7 @@ public class User {
     @Column(name = "pesel")
     private String pesel;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Contact> contacts = new ArrayList<>();
 
 }

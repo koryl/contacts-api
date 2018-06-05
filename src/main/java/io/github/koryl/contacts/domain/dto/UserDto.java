@@ -3,11 +3,13 @@ package io.github.koryl.contacts.domain.dto;
 import io.github.koryl.contacts.domain.entity.Contact;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {
 
@@ -29,14 +31,4 @@ public class UserDto {
     private String pesel;
 
     private List<Contact> contacts;
-
-    public UserDto(@NotEmpty String firstName, @NotEmpty String lastName, @NotEmpty String gender, @NotEmpty String birthDate, @NotEmpty String pesel, List<Contact> contacts) {
-
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.gender = gender;
-        this.birthDate = birthDate;
-        this.pesel = pesel;
-        this.contacts = contacts;
-    }
 }

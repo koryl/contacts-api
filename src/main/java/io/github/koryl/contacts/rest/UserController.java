@@ -3,6 +3,7 @@ package io.github.koryl.contacts.rest;
 import io.github.koryl.contacts.domain.dto.UserDto;
 import io.github.koryl.contacts.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -42,4 +43,13 @@ public class UserController {
 
         return userService.updateUserWithId(id, user);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
+
+        userService.deleteUserWithId(id);
+
+        return ResponseEntity.ok().build();
+    }
+
 }
