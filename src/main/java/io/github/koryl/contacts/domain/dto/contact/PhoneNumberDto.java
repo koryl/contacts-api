@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Data
-@JsonTypeName
 @NoArgsConstructor
 public class PhoneNumberDto implements ContactDto {
 

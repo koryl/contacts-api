@@ -9,7 +9,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 @Data
-@JsonTypeName
 @NoArgsConstructor
 public class EmailAddressDto implements ContactDto {
 
