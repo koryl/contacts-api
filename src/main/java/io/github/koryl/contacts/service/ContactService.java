@@ -10,10 +10,13 @@ import io.github.koryl.contacts.domain.entity.contact.ContactFactory;
 import io.github.koryl.contacts.domain.entity.contact.EmailAddress;
 import io.github.koryl.contacts.domain.entity.contact.PhoneNumber;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -86,15 +89,19 @@ public class ContactService {
         contact.setValue(contactDto.getValue());
         contact.setUser(user);
 
-        switch (contactDto.getContactType()) {
-            case EMAIL_ADDRESS:
-                EmailAddress emailAddress = (EmailAddress) contact;
-                return emailAddressRepository.save(emailAddress);
-            case PHONE_NUMBER:
-                PhoneNumber phoneNumber = (PhoneNumber) contact;
-                return phoneNumberRepository.save(phoneNumber);
-            default:
-                throw new RuntimeException("It was not possible to save contact in the repository.");
+        try {
+            switch (contactDto.getContactType()) {
+                case EMAIL_ADDRESS:
+                    EmailAddress emailAddress = (EmailAddress) contact;
+                    return emailAddressRepository.save(emailAddress);
+                case PHONE_NUMBER:
+                    PhoneNumber phoneNumber = (PhoneNumber) contact;
+                    return phoneNumberRepository.save(phoneNumber);
+                default:
+                    throw new RuntimeException("It was not possible to save contact in the repository.");
+            }
+        } catch (ConstraintViolationException | DataIntegrityViolationException e) {
+            throw new RuntimeException("Provided contact already exist.");
         }
     }
 }

@@ -5,7 +5,9 @@ import io.github.koryl.contacts.dao.UserRepository;
 import io.github.koryl.contacts.domain.dto.UserDto;
 import io.github.koryl.contacts.domain.entity.User;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -50,11 +52,16 @@ public class UserService {
 
     public UserDto createNewUser(UserDto userDto) {
 
-        User savedUser = userRepository.save(fromUserDtoTransferToDb(userDto));
+        try {
+            User savedUser = userRepository.save(fromUserDtoTransferToDb(userDto));
+            log.info("New user with id: " + savedUser.getId() + " was created.");
 
-        log.info("New user with id: " + savedUser.getId() + " was created.");
+            return fromDbTransferToUserDto(savedUser);
 
-        return fromDbTransferToUserDto(savedUser);
+        } catch (ConstraintViolationException | DataIntegrityViolationException e) {
+            log.error("Cannot create user with provided data");
+            throw new RuntimeException("Provided user already exist. Check if PESEL is unique.");
+        }
     }
 
     public UserDto updateUserWithId(Long id, UserDto user) {
@@ -75,7 +82,6 @@ public class UserService {
         userRepository.delete(rawUser);
         log.info("User with id: " + rawUser.getId() + "was deleted.");
     }
-
 
 
     public List<UserDto> findPeopleByBirthDateBetween(String from, String to) {
