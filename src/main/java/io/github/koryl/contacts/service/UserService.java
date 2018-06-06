@@ -3,6 +3,7 @@ package io.github.koryl.contacts.service;
 import com.google.common.collect.Lists;
 import io.github.koryl.contacts.dao.UserRepository;
 import io.github.koryl.contacts.domain.dto.UserDto;
+import io.github.koryl.contacts.domain.dto.UserDtoBuilder;
 import io.github.koryl.contacts.domain.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
@@ -25,11 +26,13 @@ public class UserService {
     private static final String MIN_DATE = "1918-01-01";
 
     private UserRepository userRepository;
+    private UserDtoBuilder userDtoBuilder;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, UserDtoBuilder userDtoBuilder) {
 
         this.userRepository = userRepository;
+        this.userDtoBuilder = userDtoBuilder;
     }
 
     public List<UserDto> getAllUsers() {
@@ -101,7 +104,7 @@ public class UserService {
             toDate = LocalDate.parse(to);
         }
 
-        List<User> rawUsers = userRepository.findUsersByBirthDateAfterAndBirthDateBefore(fromDate, toDate);
+        List<User> rawUsers = userRepository.findUsersByBirthDateIsGreaterThanEqualAndBirthDateLessThanEqual(fromDate, toDate);
 
         log.info("It was found " + rawUsers.size() + " users having a birth day in this range.");
 
@@ -114,13 +117,14 @@ public class UserService {
 
     private UserDto fromDbTransferToUserDto(User rawUser) {
 
-        return new UserDto(
-                rawUser.getId(),
-                rawUser.getFirstName(),
-                rawUser.getLastName(),
-                rawUser.getGender(),
-                rawUser.getBirthDate(),
-                rawUser.getPesel());
+        return userDtoBuilder
+                .userId(rawUser.getId())
+                .firstName(rawUser.getFirstName())
+                .lastName(rawUser.getLastName())
+                .gender(rawUser.getGender())
+                .birthDate(rawUser.getBirthDate())
+                .pesel(rawUser.getPesel())
+                .build();
     }
 
     private User fromUserDtoTransferToDb(UserDto userDto) {

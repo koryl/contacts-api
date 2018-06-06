@@ -1,6 +1,5 @@
 package io.github.koryl.contacts.domain.dto.contact;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.github.koryl.contacts.domain.ContactType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
