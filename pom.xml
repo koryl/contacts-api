@@ -14,7 +14,7 @@
 	<developers>
 		<developer>
 			<name>Adrian Koryl</name>
-			<email>adrian.koryl@gmail.com</email>
+			<value>adrian.koryl@gmail.com</value>
 			<url>http://www.github.com/koryl</url>
 		</developer>
 	</developers>

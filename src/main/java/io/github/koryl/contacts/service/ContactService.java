@@ -1,49 +1,53 @@
 package io.github.koryl.contacts.service;
 
-import io.github.koryl.contacts.dao.ContactRepository;
 import io.github.koryl.contacts.dao.EmailAddressRepository;
+import io.github.koryl.contacts.dao.PhoneNumberRepository;
 import io.github.koryl.contacts.dao.UserRepository;
-import io.github.koryl.contacts.domain.dto.ContactDto;
-import io.github.koryl.contacts.domain.entity.Contact;
-import io.github.koryl.contacts.domain.entity.User;
+import io.github.koryl.contacts.domain.dto.contact.*;
+import io.github.koryl.contacts.domain.entity.*;
+import io.github.koryl.contacts.domain.entity.contact.Contact;
+import io.github.koryl.contacts.domain.entity.contact.ContactFactory;
+import io.github.koryl.contacts.domain.entity.contact.EmailAddress;
+import io.github.koryl.contacts.domain.entity.contact.PhoneNumber;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
+@Slf4j
 public class ContactService {
 
-    private final ContactRepository contactRepository;
     private final EmailAddressRepository emailAddressRepository;
+    private final PhoneNumberRepository phoneNumberRepository;
     private final UserRepository userRepository;
+    private final ContactFactory contactFactory;
+    private final ContactDtoFactory contactDtoFactory;
 
     @Autowired
-    public ContactService(ContactRepository contactRepository, UserRepository userRepository, EmailAddressRepository emailAddressRepository) {
+    public ContactService(UserRepository userRepository, EmailAddressRepository emailAddressRepository, PhoneNumberRepository phoneNumberRepository, ContactFactory contactFactory, ContactDtoFactory contactDtoFactory) {
 
-        this.contactRepository = contactRepository;
         this.userRepository = userRepository;
         this.emailAddressRepository = emailAddressRepository;
+        this.phoneNumberRepository = phoneNumberRepository;
+        this.contactFactory = contactFactory;
+        this.contactDtoFactory = contactDtoFactory;
     }
 
     public List<ContactDto> getContactsOfUser(Long id) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with id: " + id + " not found."));
-        List<Contact> rawContacts = contactRepository.findByUser(user);
+        List<EmailAddress> rawEmails = emailAddressRepository.findByUser(user);
+        List<PhoneNumber> rawNumbers = phoneNumberRepository.findByUser(user);
 
-        return rawContacts
-                .stream()
-                .map(e ->
-                        ContactDto.builder()
-                                .id(e.getId())
-                                .contactType(e.getContactType())
-                                .contactValue(e.getContactValue())
-                                .userId(e.getUser().getId())
-                                .build())
-                .collect(Collectors.toList());
+
+        return buildContactsFromEmailsAndNumbers(rawEmails, rawNumbers);
     }
 
     public ContactDto createNewContact(Long id, ContactDto contactDto) {
@@ -51,18 +55,46 @@ public class ContactService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with id: " + id + " not found."));
 
-        Contact contact = new Contact();
-        contact.setContactType(contactDto.getContactType());
-        contact.setContactValue(contactDto.getContactValue());
+        contactDto.setUserId(user.getId());
+        Contact contact = saveContact(contactDto, user);
+
+        ContactDto createdContact = contactDtoFactory.getContactDto(contactDto.getContactType());
+        createdContact.setValue(contact.getValue());
+        createdContact.setUserId(contact.getUser().getId());
+
+        return createdContact;
+    }
+
+    private List<ContactDto> buildContactsFromEmailsAndNumbers(List<EmailAddress> emails, List<PhoneNumber> numbers) {
+
+        List<ContactDto> contactEmails = emails.stream()
+                .map(email -> new EmailAddressDto(email.getValue(), email.getUser().getId()))
+                .collect(Collectors.toList());
+
+        List<ContactDto> contactNumbers = numbers.stream()
+                .map(number -> new PhoneNumberDto(number.getValue(), number.getUser().getId()))
+                .collect(Collectors.toList());
+
+        return Stream.of(contactEmails, contactNumbers)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    private Contact saveContact(ContactDto contactDto, User user) {
+
+        Contact contact = contactFactory.getContact(contactDto.getContactType());
+        contact.setValue(contactDto.getValue());
         contact.setUser(user);
 
-        Contact savedContact = contactRepository.save(contact);
-
-        return ContactDto.builder()
-                .id(savedContact.getId())
-                .contactType(savedContact.getContactType())
-                .contactValue(savedContact.getContactValue())
-                .userId(savedContact.getUser().getId())
-                .build();
+        switch (contactDto.getContactType()) {
+            case EMAIL_ADDRESS:
+                EmailAddress emailAddress = (EmailAddress) contact;
+                return emailAddressRepository.save(emailAddress);
+            case PHONE_NUMBER:
+                PhoneNumber phoneNumber = (PhoneNumber) contact;
+                return phoneNumberRepository.save(phoneNumber);
+            default:
+                throw new RuntimeException("It was not possible to save contact in the repository.");
+        }
     }
 }

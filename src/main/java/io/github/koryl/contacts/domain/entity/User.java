@@ -27,6 +27,6 @@ public class User {
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
-    @Column(name = "pesel")
+    @Column(name = "pesel", unique = true)
     private String pesel;
 }
