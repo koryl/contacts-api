@@ -1,4 +1,4 @@
-package io.github.koryl.contacts.validation;
+package io.github.koryl.contacts.utilities.validation;
 
 
 import javax.validation.Constraint;

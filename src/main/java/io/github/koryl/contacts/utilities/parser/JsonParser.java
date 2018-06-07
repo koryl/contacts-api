@@ -1,4 +1,4 @@
-package io.github.koryl.contacts.loader.parser;
+package io.github.koryl.contacts.utilities.parser;
 
 import io.github.koryl.contacts.domain.entity.User;
 import org.springframework.stereotype.Component;

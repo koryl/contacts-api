@@ -2,7 +2,7 @@ package io.github.koryl.contacts.loader;
 
 import io.github.koryl.contacts.dao.UserRepository;
 import io.github.koryl.contacts.domain.entity.User;
-import io.github.koryl.contacts.loader.parser.Parser;
+import io.github.koryl.contacts.utilities.parser.Parser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -41,8 +41,8 @@ public class DataLoader implements ApplicationRunner {
     }
 
     /**
-     * Method for getting path of file for data initialization use. To use it provide as parameter 'dataFilePath',
-     * otherwise it will be used default location.
+     * Method for getting path of file for data initialization use. To use it provide a parameter 'dataFilePath' during,
+     * starting project, otherwise it will be used default location.
      *
      * @return path of file to initialize data.
      */

@@ -1,4 +1,4 @@
-package io.github.koryl.contacts.validation;
+package io.github.koryl.contacts.utilities.validation;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -13,7 +13,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface InCorrectDateRange {
 
-    String message() default "{io.github.koryl.contacts.validation.InCorrectDateRange.message}";
+    String message() default "{io.github.koryl.contacts.utilities.validation.InCorrectDateRange.message}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
     String min() default "1918-01-01";

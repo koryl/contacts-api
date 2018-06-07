@@ -12,60 +12,65 @@ import static java.util.Objects.*;
 @Component
 public class UserDtoBuilder {
 
-    private UserDto userDto;
+    private long id;
+    private String firstName;
+    private String lastName;
+    private char gender;
+    private LocalDate birthDate;
+    private String pesel;
+    private List<ContactDto> contacts;
 
     public UserDtoBuilder() {
-
-        userDto = new UserDto();
     }
 
-    public UserDtoBuilder userId(long id) {
+    public UserDtoBuilder id(long id) {
 
-        userDto.setUserId(id);
+        this.id = id;
         return this;
     }
 
     public UserDtoBuilder firstName(String firstName) {
 
-        userDto.setFirstName(firstName);
+        this.firstName = firstName;
         return this;
     }
 
     public UserDtoBuilder lastName(String lastName) {
 
-        userDto.setLastName(lastName);
+        this.lastName = lastName;
         return this;
     }
 
     public UserDtoBuilder gender(char gender) {
 
-        userDto.setGender(gender);
+        this.gender = gender;
         return this;
     }
 
     public UserDtoBuilder birthDate(LocalDate birthDate) {
 
-        userDto.setBirthDate(birthDate);
+        this.birthDate = birthDate;
         return this;
     }
 
     public UserDtoBuilder pesel(String pesel) {
 
-        userDto.setPesel(pesel);
+        this.pesel = pesel;
         return this;
     }
 
-    public UserDtoBuilder contacts(List<ContactDto> contacts) {
+    public UserDtoBuilder contacts(List<ContactDto> contactList) {
 
-        if (isNull(contacts)) {
-            contacts = new ArrayList<>();
+        if (isNull(contactList)) {
+            this.contacts = new ArrayList<>();
+        } else {
+            this.contacts = contactList;
         }
-        userDto.setContacts(contacts);
         return this;
     }
 
-    public UserDto build() {
+    public UserDto createUser() {
 
-        return this.userDto;
+        return new UserDto(id, firstName, lastName, gender, birthDate, pesel, contacts);
     }
 }
