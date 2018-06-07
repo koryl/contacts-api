@@ -47,6 +47,7 @@ public class DataLoader implements ApplicationRunner {
 
             userRepository.save(entry.getKey());
             entry.getValue().forEach(contact -> {
+                contact.setUser(entry.getKey());
                 if (contact instanceof EmailAddress) {
                     emailAddressRepository.save((EmailAddress)contact);
                 } else if (contact instanceof PhoneNumber) {
