@@ -1,6 +1,8 @@
-package io.github.koryl.contacts.domain.entity;
+package io.github.koryl.contacts.domain.entity.user;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -8,6 +10,8 @@ import java.time.LocalDate;
 @Entity
 @Data
 @Table(name = "users")
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -27,6 +31,6 @@ public class User {
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
-    @Column(name = "pesel")
+    @Column(name = "pesel", unique = true)
     private String pesel;
 }

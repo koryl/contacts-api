@@ -1,14 +1,14 @@
 package io.github.koryl.contacts.dao;
 
+import io.github.koryl.contacts.domain.entity.contact.EmailAddress;
 import io.github.koryl.contacts.domain.entity.user.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface EmailAddressRepository extends CrudRepository<EmailAddress, Long> {
 
-    List<User> findUsersByBirthDateIsGreaterThanEqualAndBirthDateLessThanEqual(LocalDate from, LocalDate to);
+    List<EmailAddress> findByUser(User user);
 }

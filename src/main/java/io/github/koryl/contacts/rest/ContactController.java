@@ -1,6 +1,6 @@
 package io.github.koryl.contacts.rest;
 
-import io.github.koryl.contacts.domain.dto.ContactDto;
+import io.github.koryl.contacts.domain.dto.contact.ContactDto;
 import io.github.koryl.contacts.service.ContactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +27,7 @@ public class ContactController {
 
     @PostMapping("/{id}/contacts")
     public ContactDto addNewContactContactForUser(@PathVariable("id") Long id, @Valid @RequestBody ContactDto contactDto) {
+
 
         return contactService.createNewContact(id, contactDto);
     }

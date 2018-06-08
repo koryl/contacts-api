@@ -1,6 +1,6 @@
 package io.github.koryl.contacts.rest;
 
-import io.github.koryl.contacts.domain.dto.UserDto;
+import io.github.koryl.contacts.domain.dto.user.UserDto;
 import io.github.koryl.contacts.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,4 +51,11 @@ public class UserController {
         userService.deleteUserWithId(id);
     }
 
+
+    @GetMapping("/find")
+    public List<UserDto> findPeopleByBirthDateBetween(@Valid @RequestParam(required = false) String fromDate,
+                                                      @Valid @RequestParam(required = false) String toDate) {
+
+        return userService.findPeopleByBirthDateBetween(fromDate, toDate);
+    }
 }

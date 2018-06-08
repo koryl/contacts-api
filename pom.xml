@@ -14,7 +14,7 @@
 	<developers>
 		<developer>
 			<name>Adrian Koryl</name>
-			<email>adrian.koryl@gmail.com</email>
+			<value>adrian.koryl@gmail.com</value>
 			<url>http://www.github.com/koryl</url>
 		</developer>
 	</developers>
@@ -32,6 +32,7 @@
 		<java.version>1.8</java.version>
 
 		<guava.version>25.1-jre</guava.version>
+		<modelmapper.version>2.0.0</modelmapper.version>
 	</properties>
 
 	<dependencies>
@@ -68,6 +69,11 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>${guava.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>${modelmapper.version}</version>
 		</dependency>
 	</dependencies>
 
