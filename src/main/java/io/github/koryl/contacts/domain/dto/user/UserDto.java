@@ -28,12 +28,15 @@ public class UserDto {
     @Size(max = 50)
     private String lastName;
 
+    @NotNull
     @Gender
     private char gender;
 
+    @NotNull
     @InCorrectDateRange
     private LocalDate birthDate;
 
+    @NotNull
     @PESEL
     private String pesel;
 

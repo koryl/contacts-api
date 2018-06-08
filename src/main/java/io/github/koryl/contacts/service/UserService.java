@@ -35,17 +35,15 @@ public class UserService {
     private static final String MIN_DATE = "1918-01-01";
 
     private final UserRepository userRepository;
-    private final UserDtoBuilder userDtoBuilder;
     private final EmailAddressRepository emailAddressRepository;
     private final PhoneNumberRepository phoneNumberRepository;
     private final UserMapper userMapper;
     private final ContactMapper contactMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, UserDtoBuilder userDtoBuilder, EmailAddressRepository emailAddressRepository, PhoneNumberRepository phoneNumberRepository, ModelMapper modelMapper, UserMapper userMapper, ContactMapper contactMapper) {
+    public UserService(UserRepository userRepository, EmailAddressRepository emailAddressRepository, PhoneNumberRepository phoneNumberRepository, ModelMapper modelMapper, UserMapper userMapper, ContactMapper contactMapper) {
 
         this.userRepository = userRepository;
-        this.userDtoBuilder = userDtoBuilder;
         this.emailAddressRepository = emailAddressRepository;
         this.phoneNumberRepository = phoneNumberRepository;
         this.userMapper = userMapper;
@@ -131,13 +129,13 @@ public class UserService {
                 .collect(toList());
     }
 
-    private User updateUserDbWithUserDtoData(User userToUpdate, UserDto updatingUserData) {
+    private User updateUserDbWithUserDtoData(User userToUpdate, UserDto userDto) {
 
-        userToUpdate.setFirstName(updatingUserData.getFirstName());
-        userToUpdate.setLastName((updatingUserData.getLastName()));
-        userToUpdate.setGender(updatingUserData.getGender());
-        userToUpdate.setBirthDate(updatingUserData.getBirthDate());
-        userToUpdate.setPesel(updatingUserData.getPesel());
+        userToUpdate.setFirstName(userDto.getFirstName());
+        userToUpdate.setLastName((userDto.getLastName()));
+        userToUpdate.setGender(userDto.getGender());
+        userToUpdate.setBirthDate(userDto.getBirthDate());
+        userToUpdate.setPesel(userDto.getPesel());
 
         return userToUpdate;
     }

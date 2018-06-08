@@ -5,7 +5,7 @@
 
 	<groupId>io.github.koryl</groupId>
 	<artifactId>contacts-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>contacts-api</name>
@@ -14,7 +14,7 @@
 	<developers>
 		<developer>
 			<name>Adrian Koryl</name>
-			<value>adrian.koryl@gmail.com</value>
+			<email>adrian.koryl@gmail.com</email>
 			<url>http://www.github.com/koryl</url>
 		</developer>
 	</developers>

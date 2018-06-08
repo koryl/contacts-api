@@ -52,7 +52,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/find")
+    @GetMapping("/findByBirthDayBetween")
     public List<UserDto> findPeopleByBirthDateBetween(@Valid @RequestParam(required = false) String fromDate,
                                                       @Valid @RequestParam(required = false) String toDate) {
 

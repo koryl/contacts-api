@@ -18,11 +18,11 @@ public interface ContactDto {
 
     String getValue();
 
-    long getUserId();
+    Long getUserId();
 
     void setContactType(ContactType contactType);
 
     void setValue(String value);
 
-    void setUserId(long userId);
+    void setUserId(Long userId);
 }

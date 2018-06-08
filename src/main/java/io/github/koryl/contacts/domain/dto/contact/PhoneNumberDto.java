@@ -20,7 +20,7 @@ public class PhoneNumberDto implements ContactDto {
     private String value;
 
     @NotNull
-    private long userId;
+    private Long userId;
 
     public PhoneNumberDto(@NotEmpty @Pattern(regexp = "[0-9]+") String value, long userId) {
 

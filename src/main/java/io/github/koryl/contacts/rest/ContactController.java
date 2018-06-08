@@ -3,6 +3,7 @@ package io.github.koryl.contacts.rest;
 import io.github.koryl.contacts.domain.dto.contact.ContactDto;
 import io.github.koryl.contacts.service.ContactService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -28,7 +29,21 @@ public class ContactController {
     @PostMapping("/{id}/contacts")
     public ContactDto addNewContactContactForUser(@PathVariable("id") Long id, @Valid @RequestBody ContactDto contactDto) {
 
-
         return contactService.createNewContact(id, contactDto);
+    }
+
+    @PutMapping("/{id}/contacts/updateContact")
+    public ContactDto addNewContactContactForUser(@PathVariable("id") Long id,
+                                                  @RequestParam String value,
+                                                  @Valid @RequestBody ContactDto contactDto) {
+
+        return contactService.updateContact(id, value, contactDto);
+    }
+
+    @DeleteMapping("/{id}/contacts/deleteContact")
+    @ResponseStatus(HttpStatus.OK)
+    public void addNewContactContactForUser(@PathVariable("id") Long id, @RequestParam String value) {
+
+        contactService.deleteContact(id, value);
     }
 }

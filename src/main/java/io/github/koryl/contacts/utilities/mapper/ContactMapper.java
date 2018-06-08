@@ -33,9 +33,20 @@ public class ContactMapper {
                     } else if (contact instanceof PhoneNumber) {
                         return modelMapper.map(contact, PhoneNumberDto.class);
                     } else {
-                        throw new RuntimeException("Cannot map provided contact list - unknown type of contacts");
+                        throw new RuntimeException("Cannot map provided contact list - unknown type of contacts.");
                     }
                 })
                 .collect(Collectors.toList());
+    }
+
+    public Contact mapContactDtoToContact(ContactDto contactDto) {
+
+        if (contactDto instanceof EmailAddress) {
+            return modelMapper.map(contactDto, EmailAddress.class);
+        } else if (contactDto instanceof PhoneNumber) {
+            return modelMapper.map(contactDto, PhoneNumber.class);
+        } else {
+            throw new RuntimeException("Cannot map provided contact dto - unknown type of contact.");
+        }
     }
 }
