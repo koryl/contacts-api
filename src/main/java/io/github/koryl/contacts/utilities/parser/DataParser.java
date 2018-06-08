@@ -8,5 +8,5 @@ import java.util.Map;
 
 public interface DataParser {
 
-    Map<User, List<? extends Contact>> parseUsers (String filePath);
+    Map<User, List<? extends Contact>> parseUsersWithContacts(String filePath);
 }

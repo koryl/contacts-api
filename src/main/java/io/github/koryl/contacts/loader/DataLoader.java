@@ -41,7 +41,7 @@ public class DataLoader implements ApplicationRunner {
 
     public void run(ApplicationArguments args) throws Exception {
 
-        Map<User, List<? extends Contact>> userListMap = dataParser.parseUsers(getDataFilePath());
+        Map<User, List<? extends Contact>> userListMap = dataParser.parseUsersWithContacts(getDataFilePath());
 
         for (Map.Entry<User, List<? extends Contact>> entry : userListMap.entrySet()) {
 
