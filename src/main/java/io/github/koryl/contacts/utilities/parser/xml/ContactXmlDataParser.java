@@ -3,86 +3,61 @@ package io.github.koryl.contacts.utilities.parser.xml;
 import io.github.koryl.contacts.domain.ContactType;
 import io.github.koryl.contacts.domain.entity.contact.Contact;
 import io.github.koryl.contacts.domain.entity.contact.ContactFactory;
+import io.github.koryl.contacts.domain.entity.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.EndElement;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.XMLEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.koryl.contacts.utilities.parser.xml.XmlDataParserHelper.getData;
-import static io.github.koryl.contacts.utilities.parser.xml.XmlDataParserHelper.isElement;
-import static java.util.Objects.requireNonNull;
 
 @Component("contactXmlDataParser")
 @Slf4j
 public class ContactXmlDataParser {
 
+    private final XmlDataParserHelper parserHelper;
     private final ContactFactory contactFactory;
 
     @Autowired
-    public ContactXmlDataParser(ContactFactory contactFactory) {
+    public ContactXmlDataParser(ContactFactory contactFactory, XmlDataParserHelper parserHelper) {
         this.contactFactory = contactFactory;
+        this.parserHelper = parserHelper;
     }
 
-    public List<Contact> parseContacts(XMLEventReader xmlEventReader) {
+    List<Contact> parseContacts(Element root) {
 
         List<Contact> contacts = new ArrayList<>();
-        Contact contact = null;
 
-        try {
-            XMLEvent xmlEvent = xmlEventReader.nextEvent();
+        NodeList contactNodeList = root.getElementsByTagName("contact");
 
-            while (xmlEventReader.hasNext()) {
+        for (int i = 0; i < contactNodeList.getLength(); i++) {
+            Node node = contactNodeList.item(i);
+            Node userNode = node.getParentNode().getParentNode();
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element contactElement = (Element) node;
+                Element userElement = (Element) userNode;
+                Contact contact;
 
-                if (xmlEvent.isEndElement()) {
-
-                    EndElement element = xmlEvent.asEndElement();
-                    if (isElement(element, "contacts")) break;
+                switch (contactElement.getAttribute("contactType")) {
+                    case "EMAIL_ADDRESS":
+                        contact = contactFactory.getContact(ContactType.EMAIL_ADDRESS);
+                        break;
+                    case "PHONE_NUMBER":
+                        contact = contactFactory.getContact(ContactType.PHONE_NUMBER);
+                        break;
+                    default:
+                        throw new RuntimeException("Contact type was not recognized.");
                 }
-                xmlEvent = xmlEventReader.nextEvent();
+                contact.setValue(parserHelper.getTextFromElement(contactElement, "value"));
+                User user = parserHelper.buildUserFromElement(userElement);
 
-                if (xmlEvent.isStartElement()) {
-
-                    StartElement startElement = xmlEvent.asStartElement();
-
-                    if (isElement(startElement, "contact")) {
-
-                        switch (startElement.getAttributeByName(QName.valueOf("contactType")).getName().getLocalPart()) {
-                            case "EMAIL_ADDRESS":
-                                contact = contactFactory.getContact(ContactType.EMAIL_ADDRESS);
-                                break;
-                            case "PHONE_NUMBER":
-                                contact = contactFactory.getContact(ContactType.PHONE_NUMBER);
-                                break;
-                            default:
-                                throw new RuntimeException("Contact type was not recognized.");
-                        }
-
-                    } else if (isElement(startElement, "value")) {
-
-                        xmlEvent = xmlEventReader.nextEvent();
-                        requireNonNull(contact).setValue(getData(xmlEvent));
-                    }
-                }
-
-                if (xmlEvent.isEndElement()) {
-                    EndElement endElement = xmlEvent.asEndElement();
-
-                    if (isElement(endElement, "contact")) {
-                        contacts.add(contact);
-                    }
-                }
+                contact.setUser(user);
+                contacts.add(contact);
             }
-        } catch (XMLStreamException e) {
-            log.error("Error when parsing xml file occurred.");
-            e.printStackTrace();
         }
         return contacts;
     }

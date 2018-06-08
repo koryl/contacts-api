@@ -1,4 +1,4 @@
-package io.github.koryl.contacts.domain.dto;
+package io.github.koryl.contacts.domain.dto.user;
 
 import io.github.koryl.contacts.domain.dto.contact.ContactDto;
 import io.github.koryl.contacts.utilities.validation.Gender;

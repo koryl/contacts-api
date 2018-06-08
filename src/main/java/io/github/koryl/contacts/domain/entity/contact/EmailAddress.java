@@ -1,6 +1,6 @@
 package io.github.koryl.contacts.domain.entity.contact;
 
-import io.github.koryl.contacts.domain.entity.User;
+import io.github.koryl.contacts.domain.entity.user.User;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;

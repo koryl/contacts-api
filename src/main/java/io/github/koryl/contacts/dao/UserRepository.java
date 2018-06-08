@@ -1,6 +1,6 @@
 package io.github.koryl.contacts.dao;
 
-import io.github.koryl.contacts.domain.entity.User;
+import io.github.koryl.contacts.domain.entity.user.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

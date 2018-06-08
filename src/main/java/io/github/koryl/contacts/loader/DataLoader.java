@@ -3,7 +3,7 @@ package io.github.koryl.contacts.loader;
 import io.github.koryl.contacts.dao.EmailAddressRepository;
 import io.github.koryl.contacts.dao.PhoneNumberRepository;
 import io.github.koryl.contacts.dao.UserRepository;
-import io.github.koryl.contacts.domain.entity.User;
+import io.github.koryl.contacts.domain.entity.user.User;
 import io.github.koryl.contacts.domain.entity.contact.Contact;
 import io.github.koryl.contacts.domain.entity.contact.EmailAddress;
 import io.github.koryl.contacts.domain.entity.contact.PhoneNumber;

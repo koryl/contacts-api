@@ -1,33 +1,36 @@
 package io.github.koryl.contacts.utilities.parser.xml;
 
+import io.github.koryl.contacts.domain.entity.user.User;
+import io.github.koryl.contacts.domain.entity.user.UserBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Element;
 
-import javax.xml.stream.events.EndElement;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.XMLEvent;
+import java.time.LocalDate;
 
 @Component("xmlDataParserHelper")
 public class XmlDataParserHelper {
 
-    static boolean isElement(XMLEvent element, String name) {
+    private final UserBuilder userBuilder;
 
-        if (element instanceof StartElement) {
-
-            StartElement startElement = (StartElement) element;
-            return startElement.getName().getLocalPart().equals(name);
-
-        } else if (element instanceof EndElement) {
-
-            EndElement endElement = (EndElement) element;
-            return endElement.getName().getLocalPart().equals(name);
-
-        } else {
-            throw new RuntimeException("Bad element type provided.");
-        }
+    @Autowired
+    public XmlDataParserHelper(UserBuilder userBuilder) {
+        this.userBuilder = userBuilder;
     }
 
-    static String getData(XMLEvent event) {
+    String getTextFromElement(Element element, String tagName) {
 
-        return event.asCharacters().getData();
+        return element.getElementsByTagName(tagName).item(0).getTextContent();
+    }
+
+    User buildUserFromElement(Element userElement) {
+
+        return userBuilder
+                .firstName(getTextFromElement(userElement, "firstName"))
+                .lastName(getTextFromElement(userElement, "lastName"))
+                .gender(getTextFromElement(userElement, "gender").charAt(0))
+                .birthDate(LocalDate.parse(getTextFromElement(userElement, "birthDate")))
+                .pesel(getTextFromElement(userElement, "pesel"))
+                .createUser();
     }
 }

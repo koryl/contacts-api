@@ -1,6 +1,6 @@
 package io.github.koryl.contacts.utilities.parser.json;
 
-import io.github.koryl.contacts.domain.entity.User;
+import io.github.koryl.contacts.domain.entity.user.User;
 import io.github.koryl.contacts.domain.entity.contact.Contact;
 import io.github.koryl.contacts.utilities.parser.DataParser;
 import org.springframework.stereotype.Component;

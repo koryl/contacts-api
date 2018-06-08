@@ -1,8 +1,8 @@
 package io.github.koryl.contacts.utilities.mapper;
 
-import io.github.koryl.contacts.domain.dto.UserDto;
+import io.github.koryl.contacts.domain.dto.user.UserDto;
 import io.github.koryl.contacts.domain.dto.contact.ContactDto;
-import io.github.koryl.contacts.domain.entity.User;
+import io.github.koryl.contacts.domain.entity.user.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

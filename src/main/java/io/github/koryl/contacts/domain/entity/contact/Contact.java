@@ -1,6 +1,6 @@
 package io.github.koryl.contacts.domain.entity.contact;
 
-import io.github.koryl.contacts.domain.entity.User;
+import io.github.koryl.contacts.domain.entity.user.User;
 
 public interface Contact {
 

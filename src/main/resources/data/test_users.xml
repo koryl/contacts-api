@@ -8,7 +8,6 @@
         <pesel>60060112118</pesel>
         <contacts>
             <contact contactType="EMAIL_ADDRESS">
-                <contactType>EMAIL_ADDRESS</contactType>
                 <value>jankowalski@poczta.pl</value>
             </contact>
         </contacts>
@@ -21,11 +20,9 @@
         <pesel>81021409915</pesel>
         <contacts>
             <contact contactType="EMAIL_ADDRESS">
-                <contactType>EMAIL_ADDRESS</contactType>
                 <value>nowaki@poczta.eu</value>
             </contact>
-            <contact>
-                <contactType>PHONE_NUMBER</contactType>
+            <contact contactType="PHONE_NUMBER">
                 <value>111222333</value>
             </contact>
         </contacts>
@@ -38,15 +35,12 @@
         <pesel>90122488608</pesel>
         <contacts>
             <contact contactType="EMAIL_ADDRESS">
-                <contactType>EMAIL_ADDRESS</contactType>
                 <value>koniecznie@poczta.us</value>
             </contact>
             <contact contactType="EMAIL_ADDRESS">
-                <contactType>EMAIL_ADDRESS</contactType>
                 <value>konieczna@poczta.pl</value>
             </contact>
-            <contact>
-                <contactType>PHONE_NUMBER</contactType>
+            <contact contactType="PHONE_NUMBER">
                 <value>01234567890</value>
             </contact>
         </contacts>
@@ -58,8 +52,7 @@
         <birthDate>1920-01-21</birthDate>
         <pesel>20012144512</pesel>
         <contacts>
-            <contact>
-                <contactType>PHONE_NUMBER</contactType>
+            <contact contactType="PHONE_NUMBER">
                 <value>12345678</value>
             </contact>
         </contacts>
