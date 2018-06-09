@@ -6,6 +6,7 @@ import io.github.koryl.contacts.domain.dto.contact.EmailAddressDto;
 import io.github.koryl.contacts.domain.dto.contact.PhoneNumberDto;
 import io.github.koryl.contacts.domain.dto.user.UserDto;
 import io.github.koryl.contacts.service.UserServiceImpl;
+import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,7 +56,7 @@ public class UserControllerTest {
         );
 
         this.testUser1 = new UserDto(1, "Jan", "Kowalski", 'M', LocalDate.parse("1950-01-01"), "50010191216", contacts);
-        this.testUser2 = new UserDto(2, "Anna", "Nowak", 'F', LocalDate.parse("1975-05-30"), "75063092802", new ArrayList<>());
+        this.testUser2 = new UserDto(2, "Anna", "Nowak", 'F', LocalDate.parse("1975-05-30"), "75063092802", Lists.emptyList());
 
         users = Arrays.asList(testUser1, testUser2);
     }

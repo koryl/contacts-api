@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
@@ -88,8 +89,8 @@ public class UserRepositoryTest {
     @Test
     public void shouldThrowExceptionWhenAlreadyExistingPesel() {
 
-        User testUser1 = new User(0, "", "", 'M', LocalDate.parse("1950-01-01"), pesel);
-        User testUser2 = new User(0, "", "", 'M', LocalDate.parse("1950-01-01"), pesel);
+        User testUser1 = new User(0, "Test", "Test", 'M', LocalDate.parse("1950-01-01"), pesel);
+        User testUser2 = new User(0, "Test", "Test", 'M', LocalDate.parse("1950-01-01"), pesel);
 
         Throwable thrown = catchThrowable(() -> {
             userRepository.save(testUser1);
@@ -98,5 +99,19 @@ public class UserRepositoryTest {
 
         assertThat(thrown)
                 .isInstanceOfAny(DataIntegrityViolationException.class, ConstraintViolationException.class);
+    }
+
+    @Test
+    public void shouldFindUserWithPesel() {
+
+        User anotherUser = new User(0,"Anna", "Nowak", 'F', LocalDate.parse("1975-05-30"), "75063092802");
+        entityManager.persist(testUser);
+        entityManager.persist(anotherUser);
+        entityManager.flush();
+
+        Optional<User> foundUser = userRepository.findByPesel(pesel);
+
+        assertThat(foundUser)
+                .contains(testUser);
     }
 }

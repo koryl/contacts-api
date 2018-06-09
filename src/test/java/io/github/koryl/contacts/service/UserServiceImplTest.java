@@ -11,13 +11,16 @@ import io.github.koryl.contacts.utilities.mapper.UserMapper;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
 import java.time.LocalDate;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -99,26 +102,82 @@ public class UserServiceImplTest {
 
         assertThat(user)
                 .hasNoNullFieldsOrProperties()
-                .isEqualToComparingFieldByField(newUser);
+                .matches(u -> Objects.equals(u.getFirstName(), firstName) &&
+                        Objects.equals(u.getLastName(), lastName) &&
+                        Objects.equals(u.getGender(), gender) &&
+                        Objects.equals(u.getBirthDate(), birthDate) &&
+                        Objects.equals(u.getPesel(), pesel));
     }
 
     @Test
-    public void shouldNotCreateNewUserWithInvalidPesel() {
+    public void shouldNotCreateNewUserWhenPeselExists() {
 
-        UserDto newUser = new UserDto(1, firstName, lastName, gender, birthDate, "123456789000", Lists.emptyList());
+        UserDto newUser = new UserDto(1, firstName, lastName, gender, birthDate, pesel, Lists.emptyList());
+        UserDto anotherUser = new UserDto(2, "Test", "Test", gender, birthDate, pesel, Lists.emptyList());
 
         when(userRepository.save(testUser)).thenReturn(testUser);
+        when(userRepository.findByPesel(pesel)).thenReturn(Optional.of(testUser));
+
+
+        Throwable thrown = catchThrowable(() -> {
+            userService.createNewUser(newUser);
+            userService.createNewUser(anotherUser);
+        });
+
+        assertThat(thrown)
+                .isNotNull()
+                .hasMessage("User with provided PESEL already exists.");
+    }
+
+    @Test
+    public void shouldUpdateUser() {
+
+        UserDto newUser = new UserDto(1, "Test", "Test", gender, birthDate, pesel, Lists.emptyList());
+
+        when(userRepository.save(testUser)).thenReturn(testUser);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(userMapper.mapUserToUserDto(testUser, Lists.emptyList())).thenReturn(newUser);
-        when(userMapper.mapUserDtoToUser(newUser)).thenReturn(testUser);
 
-        UserDto user = userService.createNewUser(newUser);
+        userRepository.save(testUser);
 
-        assertThat(user)
+        UserDto updatedUser = userService.updateUserWithId(1L, newUser);
+
+
+        assertThat(updatedUser)
                 .hasNoNullFieldsOrProperties()
-                .hasFieldOrPropertyWithValue("firstName", newUser.getFirstName())
-                .hasFieldOrPropertyWithValue("lastName", newUser.getLastName())
-                .hasFieldOrPropertyWithValue("gender", newUser.getGender())
-                .hasFieldOrPropertyWithValue("birthDate", newUser.getBirthDate())
-                .hasFieldOrPropertyWithValue("pesel", newUser.getPesel());
+                .matches(u -> Objects.equals(u.getFirstName(), "Test") &&
+                        Objects.equals(u.getLastName(), "Test"));
+    }
+
+    @Test
+    public void shouldNotUpdateUserIfNotExist() {
+
+        UserDto newUser = new UserDto(1, "Test", "Test", gender, birthDate, pesel, Lists.emptyList());
+
+        when(userRepository.save(testUser)).thenReturn(testUser);
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+        when(userMapper.mapUserToUserDto(testUser, Lists.emptyList())).thenReturn(newUser);
+
+        Throwable thrown = catchThrowable(() -> {
+            userService.updateUserWithId(1L, newUser);
+        });
+
+        assertThat(thrown)
+                .isNotNull()
+                .hasMessage("User with id: 1 not found.")
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void shouldDeleteUser() {
+
+        when(userRepository.save(testUser)).thenReturn(testUser);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser)).thenReturn(null);
+
+        userRepository.save(testUser);
+        userService.deleteUserWithId(1L);
+        Optional<User> deletedUser = userRepository.findById(1L);
+
+        assertThat(deletedUser).isNull();
     }
 }
