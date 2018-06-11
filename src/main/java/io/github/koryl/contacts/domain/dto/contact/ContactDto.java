@@ -18,11 +18,7 @@ public interface ContactDto {
 
     String getValue();
 
-    Long getUserId();
-
     void setContactType(ContactType contactType);
 
     void setValue(String value);
-
-    void setUserId(Long userId);
 }

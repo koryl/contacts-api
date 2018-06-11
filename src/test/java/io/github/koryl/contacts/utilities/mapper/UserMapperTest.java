@@ -1,6 +1,5 @@
 package io.github.koryl.contacts.utilities.mapper;
 
-
 import io.github.koryl.contacts.domain.dto.contact.EmailAddressDto;
 import io.github.koryl.contacts.domain.dto.user.UserDto;
 import io.github.koryl.contacts.domain.entity.user.User;
@@ -9,21 +8,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.modelmapper.ModelMapper;
 
-import java.time.LocalDate;
 import java.util.Objects;
 
+import static io.github.koryl.contacts.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class UserMapperTest {
-
-    private final String firstName = "Jan";
-    private final String lastName = "Kowalski";
-    private final char gender = 'M';
-    private final LocalDate birthDate = LocalDate.parse("1950-01-01");
-    private final String pesel = "50010191216";
-    private final String emailValue = "test@test.com";
 
     private ModelMapper modelMapper;
     private UserMapper userMapper;
@@ -37,8 +29,8 @@ public class UserMapperTest {
         modelMapper = mock(ModelMapper.class);
         userMapper = new UserMapper(modelMapper);
 
-        testUser = new User(1, firstName, lastName, gender, birthDate, pesel);
-        testUserDto = new UserDto(1, firstName, lastName, gender, birthDate, pesel, Lists.list(new EmailAddressDto(emailValue, 1L)));
+        testUser = new User(1, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL);
+        testUserDto = new UserDto(1, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL, null);
 
     }
 
@@ -47,16 +39,33 @@ public class UserMapperTest {
 
         when(modelMapper.map(testUser, UserDto.class)).thenReturn(testUserDto);
 
-        UserDto mappedUser = userMapper.mapUserToUserDto(testUser, Lists.list(new EmailAddressDto(emailValue, 1L)));
+        UserDto mappedUserDto = userMapper.mapUserToUserDto(testUser, Lists.list(new EmailAddressDto(EMAIL_ADDRESS_VALUE)));
+
+        assertThat(mappedUserDto)
+                .isNotNull()
+                .matches(u -> Objects.equals(u.getFirstName(), FIRST_NAME) &&
+                        Objects.equals(u.getLastName(), LAST_NAME) &&
+                        Objects.equals(u.getGender(), GENDER) &&
+                        Objects.equals(u.getBirthDate(), BIRTH_DATE) &&
+                        Objects.equals(u.getPesel(), PESEL) &&
+                        Objects.equals(u.getContacts().get(0).getValue(), EMAIL_ADDRESS_VALUE)
+                );
+    }
+
+    @Test
+    public void shouldMapUserDtoToUser() {
+
+        when(modelMapper.map(testUserDto, User.class)).thenReturn(testUser);
+
+        User mappedUser = userMapper.mapUserDtoToUser(testUserDto);
 
         assertThat(mappedUser)
                 .isNotNull()
-                .matches(u -> Objects.equals(u.getFirstName(), firstName) &&
-                        Objects.equals(u.getLastName(), lastName) &&
-                        Objects.equals(u.getGender(), gender) &&
-                        Objects.equals(u.getBirthDate(), birthDate) &&
-                        Objects.equals(u.getPesel(), pesel) &&
-                        Objects.equals(u.getContacts().get(0).getValue(), emailValue)
+                .matches(u -> Objects.equals(u.getFirstName(), FIRST_NAME) &&
+                        Objects.equals(u.getLastName(), LAST_NAME) &&
+                        Objects.equals(u.getGender(), GENDER) &&
+                        Objects.equals(u.getBirthDate(), BIRTH_DATE) &&
+                        Objects.equals(u.getPesel(), PESEL)
                 );
     }
 }

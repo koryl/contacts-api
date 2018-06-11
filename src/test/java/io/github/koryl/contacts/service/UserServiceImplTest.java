@@ -13,24 +13,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
-import java.time.LocalDate;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static io.github.koryl.contacts.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class UserServiceImplTest {
-
-    private final String firstName = "Jan";
-    private final String lastName = "Kowalski";
-    private final char gender = 'M';
-    private final LocalDate birthDate = LocalDate.parse("1950-01-01");
-    private final String pesel = "50010191216";
 
     private UserService userService;
     private UserRepository userRepository;
@@ -52,14 +45,14 @@ public class UserServiceImplTest {
         contactMapper = mock(ContactMapper.class);
         userService = new UserServiceImpl(userRepository, emailAddressRepository, phoneNumberRepository, userMapper, contactMapper);
 
-        testUser = new User(1, firstName, lastName, gender, birthDate, pesel);
+        testUser = new User(1, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL);
         testUserList = ImmutableList.of(testUser);
     }
 
     @Test
     public void shouldGetAllUsers() {
 
-        UserDto expectedUser = new UserDto(1, firstName, lastName, gender, birthDate, pesel, Lists.emptyList());
+        UserDto expectedUser = new UserDto(1, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL, Lists.emptyList());
 
 
         when(userRepository.findAll()).thenReturn(testUserList);
@@ -77,7 +70,7 @@ public class UserServiceImplTest {
     @Test
     public void shouldGetSpecificUserById() {
 
-        UserDto expectedUser = new UserDto(1, firstName, lastName, gender, birthDate, pesel, Lists.emptyList());
+        UserDto expectedUser = new UserDto(1, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL, Lists.emptyList());
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(userMapper.mapUserToUserDto(testUser, Lists.emptyList())).thenReturn(expectedUser);
@@ -92,7 +85,7 @@ public class UserServiceImplTest {
     @Test
     public void shouldCreateNewUser() {
 
-        UserDto newUser = new UserDto(1, firstName, lastName, gender, birthDate, pesel, Lists.emptyList());
+        UserDto newUser = new UserDto(1, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL, Lists.emptyList());
 
         when(userRepository.save(testUser)).thenReturn(testUser);
         when(userMapper.mapUserToUserDto(testUser, Lists.emptyList())).thenReturn(newUser);
@@ -102,21 +95,21 @@ public class UserServiceImplTest {
 
         assertThat(user)
                 .hasNoNullFieldsOrProperties()
-                .matches(u -> Objects.equals(u.getFirstName(), firstName) &&
-                        Objects.equals(u.getLastName(), lastName) &&
-                        Objects.equals(u.getGender(), gender) &&
-                        Objects.equals(u.getBirthDate(), birthDate) &&
-                        Objects.equals(u.getPesel(), pesel));
+                .matches(u -> Objects.equals(u.getFirstName(), FIRST_NAME) &&
+                        Objects.equals(u.getLastName(), LAST_NAME) &&
+                        Objects.equals(u.getGender(), GENDER) &&
+                        Objects.equals(u.getBirthDate(), BIRTH_DATE) &&
+                        Objects.equals(u.getPesel(), PESEL));
     }
 
     @Test
     public void shouldNotCreateNewUserWhenPeselExists() {
 
-        UserDto newUser = new UserDto(1, firstName, lastName, gender, birthDate, pesel, Lists.emptyList());
-        UserDto anotherUser = new UserDto(2, "Test", "Test", gender, birthDate, pesel, Lists.emptyList());
+        UserDto newUser = new UserDto(1, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL, Lists.emptyList());
+        UserDto anotherUser = new UserDto(2, "Test", "Test", GENDER, BIRTH_DATE, PESEL, Lists.emptyList());
 
         when(userRepository.save(testUser)).thenReturn(testUser);
-        when(userRepository.findByPesel(pesel)).thenReturn(Optional.of(testUser));
+        when(userRepository.findByPesel(PESEL)).thenReturn(Optional.of(testUser));
 
 
         Throwable thrown = catchThrowable(() -> {
@@ -132,7 +125,7 @@ public class UserServiceImplTest {
     @Test
     public void shouldUpdateUser() {
 
-        UserDto newUser = new UserDto(1, "Test", "Test", gender, birthDate, pesel, Lists.emptyList());
+        UserDto newUser = new UserDto(1, "Test", "Test", GENDER, BIRTH_DATE, PESEL, Lists.emptyList());
 
         when(userRepository.save(testUser)).thenReturn(testUser);
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
@@ -152,7 +145,7 @@ public class UserServiceImplTest {
     @Test
     public void shouldNotUpdateUserIfNotExist() {
 
-        UserDto newUser = new UserDto(1, "Test", "Test", gender, birthDate, pesel, Lists.emptyList());
+        UserDto newUser = new UserDto(1, "Test", "Test", GENDER, BIRTH_DATE, PESEL, Lists.emptyList());
 
         when(userRepository.save(testUser)).thenReturn(testUser);
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
