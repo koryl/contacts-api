@@ -19,7 +19,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -87,7 +86,7 @@ public class UserControllerTest {
 
         given(userService.getUserById(testUser1.getId())).willReturn(testUser1);
 
-        mockMvc.perform(get("/users/" + testUser1.getId())
+        mockMvc.perform(get("/users/{id}", testUser1.getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -119,10 +118,9 @@ public class UserControllerTest {
     @Test
     public void shouldUpdateUser() throws Exception {
 
-        UserDto updatedTestUser = testUser1;
-
         String updatedFirstName = "Stanislaw";
         String updatedLastName = "Nowak";
+        UserDto updatedTestUser = new UserDto(1, updatedFirstName, updatedLastName, 'M', LocalDate.parse("1950-01-01"), "50010191216", Lists.emptyList());
 
         updatedTestUser.setFirstName(updatedFirstName);
         updatedTestUser.setLastName(updatedLastName);

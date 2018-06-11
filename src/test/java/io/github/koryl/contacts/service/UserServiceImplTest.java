@@ -171,10 +171,8 @@ public class UserServiceImplTest {
     @Test
     public void shouldDeleteUser() {
 
-        when(userRepository.save(testUser)).thenReturn(testUser);
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser)).thenReturn(null);
 
-        userRepository.save(testUser);
         userService.deleteUserWithId(1L);
         Optional<User> deletedUser = userRepository.findById(1L);
 

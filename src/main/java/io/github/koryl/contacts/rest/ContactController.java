@@ -27,22 +27,23 @@ public class ContactController {
     }
 
     @PostMapping("/{id}/contacts")
-    public ContactDto addNewContactContactForUser(@PathVariable("id") Long id, @Valid @RequestBody ContactDto contactDto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ContactDto addNewContactForUser(@PathVariable("id") Long id, @Valid @RequestBody ContactDto contactDto) {
 
         return contactService.createNewContact(id, contactDto);
     }
 
     @PutMapping("/{id}/contacts/updateContact")
-    public ContactDto addNewContactContactForUser(@PathVariable("id") Long id,
-                                                  @RequestParam String value,
-                                                  @Valid @RequestBody ContactDto contactDto) {
+    public ContactDto updateContactOfUser(@PathVariable("id") Long id,
+                                           @RequestParam String value,
+                                           @Valid @RequestBody ContactDto contactDto) {
 
         return contactService.updateContact(id, value, contactDto);
     }
 
     @DeleteMapping("/{id}/contacts/deleteContact")
     @ResponseStatus(HttpStatus.OK)
-    public void addNewContactContactForUser(@PathVariable("id") Long id, @RequestParam String value) {
+    public void deleteContactOfUser(@PathVariable("id") Long id, @RequestParam String value) {
 
         contactService.deleteContact(id, value);
     }

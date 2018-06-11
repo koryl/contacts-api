@@ -16,7 +16,6 @@ import io.github.koryl.contacts.domain.entity.user.User;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,8 +33,8 @@ public class ContactServiceImplTest {
     private final LocalDate birthDate = LocalDate.parse("1950-01-01");
     private final String pesel = "50010191216";
 
-    private final String emailValue = "test@test.com";
-    private final String phoneValue = "123456789";
+    private final String emailAddressValue = "test@test.com";
+    private final String phoneNumberValue = "123456789";
 
     private ContactService contactService;
     private UserRepository userRepository;
@@ -60,8 +59,8 @@ public class ContactServiceImplTest {
         contactService = new ContactServiceImpl(userRepository, emailAddressRepository, phoneNumberRepository, contactFactory, contactDtoFactory);
 
         testUser = new User(1, firstName, lastName, gender, birthDate, pesel);
-        emailAddress = new EmailAddress(0, emailValue, testUser);
-        phoneNumber = new PhoneNumber(0, phoneValue, testUser);
+        emailAddress = new EmailAddress(0, emailAddressValue, testUser);
+        phoneNumber = new PhoneNumber(0, phoneNumberValue, testUser);
 
 
         given(userRepository.findById(1L)).willReturn(Optional.of(testUser));
@@ -79,8 +78,8 @@ public class ContactServiceImplTest {
                 .hasSize(2)
                 .hasAtLeastOneElementOfType(EmailAddressDto.class)
                 .hasAtLeastOneElementOfType(PhoneNumberDto.class)
-                .contains(new EmailAddressDto(emailValue))
-                .contains(new PhoneNumberDto(phoneValue));
+                .contains(new EmailAddressDto(emailAddressValue))
+                .contains(new PhoneNumberDto(phoneNumberValue));
     }
 
     @Test
@@ -88,13 +87,13 @@ public class ContactServiceImplTest {
 
         when(emailAddressRepository.save(emailAddress)).thenReturn(emailAddress);
 
-        ContactDto emailDto = new EmailAddressDto(emailValue);
+        ContactDto emailDto = new EmailAddressDto(emailAddressValue);
 
         ContactDto contactDto = contactService.createNewContact(1L, emailDto);
 
         assertThat(contactDto)
                 .isInstanceOf(EmailAddressDto.class)
-                .hasFieldOrPropertyWithValue("value", emailValue)
+                .hasFieldOrPropertyWithValue("value", emailAddressValue)
                 .hasFieldOrPropertyWithValue("contactType", ContactType.EMAIL_ADDRESS);
     }
 
@@ -103,13 +102,69 @@ public class ContactServiceImplTest {
 
         when(phoneNumberRepository.save(phoneNumber)).thenReturn(phoneNumber);
 
-        ContactDto numberDto = new PhoneNumberDto(phoneValue);
+        ContactDto numberDto = new PhoneNumberDto(phoneNumberValue);
 
         ContactDto contactDto = contactService.createNewContact(1L, numberDto);
 
         assertThat(contactDto)
                 .isInstanceOf(PhoneNumberDto.class)
-                .hasFieldOrPropertyWithValue("value", phoneValue)
+                .hasFieldOrPropertyWithValue("value", phoneNumberValue)
                 .hasFieldOrPropertyWithValue("contactType", ContactType.PHONE_NUMBER);
+    }
+
+    @Test
+    public void shouldCorrectlyUpdateEmailAddressAndReturnContactDto() {
+
+        when(emailAddressRepository.findByValue(emailAddressValue)).thenReturn(Optional.of(emailAddress));
+        when(emailAddressRepository.save(emailAddress)).thenReturn(emailAddress);
+
+        String updatedValue = "updated@test.com";
+        ContactDto emailDto = new EmailAddressDto(updatedValue);
+
+        ContactDto updatedContactDto = contactService.updateContact(1L, emailAddressValue, emailDto);
+
+        assertThat(updatedContactDto)
+                .isInstanceOf(EmailAddressDto.class)
+                .hasFieldOrPropertyWithValue("value",updatedValue)
+                .hasFieldOrPropertyWithValue("contactType", ContactType.EMAIL_ADDRESS);
+    }
+
+    @Test
+    public void shouldCorrectlyUpdatePhoneNumberAndReturnContactDto() {
+
+        when(phoneNumberRepository.findByValue(phoneNumberValue)).thenReturn(Optional.of(phoneNumber));
+        when(phoneNumberRepository.save(phoneNumber)).thenReturn(phoneNumber);
+
+        String updatedValue = "987654321";
+        ContactDto phoneDto = new PhoneNumberDto(updatedValue);
+
+        ContactDto updatedContactDto = contactService.updateContact(1L, phoneNumberValue, phoneDto);
+
+        assertThat(updatedContactDto)
+                .isInstanceOf(PhoneNumberDto.class)
+                .hasFieldOrPropertyWithValue("value",updatedValue)
+                .hasFieldOrPropertyWithValue("contactType", ContactType.PHONE_NUMBER);
+    }
+
+    @Test
+    public void shouldDeleteEmailAddress() {
+
+        when(emailAddressRepository.findByValue(emailAddressValue)).thenReturn(Optional.of(emailAddress)).thenReturn(null);
+
+        contactService.deleteContact(1L, emailAddressValue);
+        Optional<EmailAddress> deletedEmailAddress = emailAddressRepository.findByValue(emailAddressValue);
+
+        assertThat(deletedEmailAddress).isNull();
+    }
+
+    @Test
+    public void shouldDeletePhoneNumber() {
+
+        when(phoneNumberRepository.findByValue(phoneNumberValue)).thenReturn(Optional.of(phoneNumber)).thenReturn(null);
+
+        contactService.deleteContact(1L, phoneNumberValue);
+        Optional<PhoneNumber> deletedPhoneNumber = phoneNumberRepository.findByValue(phoneNumberValue);
+
+        assertThat(deletedPhoneNumber).isNull();
     }
 }
