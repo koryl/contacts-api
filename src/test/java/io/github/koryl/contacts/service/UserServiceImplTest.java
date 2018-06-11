@@ -4,9 +4,13 @@ import com.google.common.collect.ImmutableList;
 import io.github.koryl.contacts.dao.EmailAddressRepository;
 import io.github.koryl.contacts.dao.PhoneNumberRepository;
 import io.github.koryl.contacts.dao.UserRepository;
+import io.github.koryl.contacts.domain.dto.contact.ContactDto;
 import io.github.koryl.contacts.domain.dto.contact.EmailAddressDto;
+import io.github.koryl.contacts.domain.dto.contact.PhoneNumberDto;
 import io.github.koryl.contacts.domain.dto.user.UserDto;
+import io.github.koryl.contacts.domain.entity.contact.Contact;
 import io.github.koryl.contacts.domain.entity.contact.EmailAddress;
+import io.github.koryl.contacts.domain.entity.contact.PhoneNumber;
 import io.github.koryl.contacts.domain.entity.user.User;
 import io.github.koryl.contacts.utilities.mapper.ContactMapper;
 import io.github.koryl.contacts.utilities.mapper.UserMapper;
@@ -16,6 +20,7 @@ import org.junit.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -73,6 +78,26 @@ public class UserServiceImplTest {
         UserDto expectedUser = new UserDto(1, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL, Lists.emptyList());
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
+        UserDto user = userService.getUserById(1L);
+
+        assertThat(user)
+                .hasNoNullFieldsOrProperties()
+                .isEqualToComparingFieldByField(expectedUser);
+    }
+
+    @Test
+    public void shouldGetUserWithUserContacts() {
+
+        EmailAddress emailAddress = new EmailAddress(1, EMAIL_ADDRESS_VALUE, testUser);
+        PhoneNumber phoneNumber = new PhoneNumber(1, PHONE_NUMBER_VALUE, testUser);
+        List<ContactDto> expectedContacts = Lists.newArrayList(new EmailAddressDto(EMAIL_ADDRESS_VALUE), new PhoneNumberDto(PHONE_NUMBER_VALUE));
+        UserDto expectedUser = new UserDto(1, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL, expectedContacts);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+        when(emailAddressRepository.findByUser(testUser)).thenReturn(Lists.list(emailAddress));
+        when(phoneNumberRepository.findByUser(testUser)).thenReturn(Lists.list(phoneNumber));
+
 
         UserDto user = userService.getUserById(1L);
 
@@ -165,6 +190,24 @@ public class UserServiceImplTest {
     }
 
     @Test
+    public void shouldFindPeopleWithBirthDayInProvidedScope() {
+
+        when(userRepository.findUsersByBirthDateIsGreaterThanEqualAndBirthDateLessThanEqual(MIN_DATE, MAX_DATE)).thenReturn(Lists.list(testUser));
+
+        List<UserDto> foundUsers = userService.findPeopleByBirthDateBetween(MIN_DATE.toString(), MAX_DATE.toString());
+
+        assertThat(foundUsers)
+                .hasSize(1)
+                .doesNotContainNull()
+                .first()
+                .matches(u -> Objects.equals(u.getFirstName(), FIRST_NAME) &&
+                        Objects.equals(u.getLastName(), LAST_NAME) &&
+                        Objects.equals(u.getGender(), GENDER) &&
+                        Objects.equals(u.getBirthDate(), BIRTH_DATE) &&
+                        Objects.equals(u.getPesel(), PESEL));
+    }
+
+    @Test
     public void shouldFindUserByExactEmail() {
 
         EmailAddressDto emailAddressToFind = new EmailAddressDto(EMAIL_ADDRESS_VALUE);
@@ -184,5 +227,59 @@ public class UserServiceImplTest {
                 .doesNotContainNull()
                 .first()
                 .isEqualTo(new UserDto(1L, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL, Lists.list(emailAddressToFind)));
+    }
+
+    @Test
+    public void shouldFindUserByPartOfEmail() {
+
+        EmailAddressDto emailAddressToFind = new EmailAddressDto(EMAIL_ADDRESS_VALUE);
+        EmailAddress testEmail1 = new EmailAddress(1, EMAIL_ADDRESS_VALUE, testUser);
+        EmailAddress testEmail2 = new EmailAddress(2, "another@another.com", new User(2, "Another", "User",  'M', LocalDate.parse("2000-01-01"), "00210123911"));
+        EmailAddress testEmail3 = new EmailAddress(3, "example@example.com", new User(3, "Example", "User", 'F', LocalDate.parse("1980-06-15"), "80061540202"));
+
+        List<EmailAddress> emails = Lists.list(testEmail1, testEmail2, testEmail3);
+
+        when(emailAddressRepository.findAll()).thenReturn(emails);
+        when(emailAddressRepository.findByUser(testUser)).thenReturn(Lists.list(testEmail1));
+
+        List<UserDto> foundUsers = userService.findPeopleByEmail("*test*");
+
+        assertThat(foundUsers)
+                .hasSize(1)
+                .doesNotContainNull()
+                .first()
+                .isEqualTo(new UserDto(1L, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL, Lists.list(emailAddressToFind)));
+    }
+
+    @Test
+    public void shouldNotFindUserByPartOfEmailWhenNoSuchPatternInEmailsExist() {
+
+        EmailAddress testEmail1 = new EmailAddress(1, "another@another.com", new User(1, "Another", "User",  'M', LocalDate.parse("2000-01-01"), "00210123911"));
+        EmailAddress testEmail2 = new EmailAddress(2, "example@example.com", new User(2, "Example", "User", 'F', LocalDate.parse("1980-06-15"), "80061540202"));
+
+        List<EmailAddress> emails = Lists.list(testEmail1, testEmail2);
+
+        when(emailAddressRepository.findAll()).thenReturn(emails);
+
+        List<UserDto> foundUsers = userService.findPeopleByEmail("*test*");
+
+        assertThat(foundUsers)
+                .hasSize(0);
+    }
+
+    @Test
+    public void shouldNotFindUserByPartOfEmailWithoutPatternWithStarsSymbols() {
+
+        EmailAddress testEmail1 = new EmailAddress(1, "test@another.com", new User(1, "Another", "User",  'M', LocalDate.parse("2000-01-01"), "00210123911"));
+        EmailAddress testEmail2 = new EmailAddress(2, "example@test.com", new User(2, "Example", "User", 'F', LocalDate.parse("1980-06-15"), "80061540202"));
+
+        List<EmailAddress> emails = Lists.list(testEmail1, testEmail2);
+
+        when(emailAddressRepository.findAll()).thenReturn(emails);
+
+        List<UserDto> foundUsers = userService.findPeopleByEmail("test");
+
+        assertThat(foundUsers)
+                .hasSize(0);
     }
 }

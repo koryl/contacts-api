@@ -21,7 +21,6 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -150,12 +149,15 @@ public class UserServiceImpl implements UserService {
                     .filter(e -> e.getValue().contains(email.substring(1, (email.length() - 1))))
                     .map(EmailAddress::getUser)
                     .collect(toList());
+            log.info("It was found " + rawUsers.size() + " user(s) having such email pattern.");
+
         } else {
             rawUsers = emails
                     .stream()
                     .filter(e -> Objects.equals(e.getValue(), email))
                     .map(EmailAddress::getUser)
                     .collect(toList());
+            log.info("It was found " + rawUsers.size() + " user(s) having such email.");
         }
 
         return rawUsers

@@ -11,4 +11,7 @@ public class TestData {
     public static final String PESEL = "50010191216";
     public static final String EMAIL_ADDRESS_VALUE = "test@test.com";
     public static final String PHONE_NUMBER_VALUE = "123456789";
+
+    public static final LocalDate MIN_DATE = LocalDate.parse("1918-01-01");
+    public static final LocalDate MAX_DATE = LocalDate.now();
 }

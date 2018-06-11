@@ -23,10 +23,6 @@ import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 @DataJpaTest
 public class UserRepositoryTest {
 
-    private final LocalDate minDate = LocalDate.parse("1918-01-01");
-    private final LocalDate maxDate = LocalDate.now();
-
-
     @Autowired
     private TestEntityManager entityManager;
 
@@ -64,7 +60,7 @@ public class UserRepositoryTest {
         entityManager.flush();
         LocalDate from = BIRTH_DATE.plusDays(1);
 
-        List<User> foundUsers = userRepository.findUsersByBirthDateIsGreaterThanEqualAndBirthDateLessThanEqual(from, maxDate);
+    List<User> foundUsers = userRepository.findUsersByBirthDateIsGreaterThanEqualAndBirthDateLessThanEqual(from, MAX_DATE);
 
         assertThat(foundUsers.size()).isEqualTo(0);
     }
@@ -76,7 +72,7 @@ public class UserRepositoryTest {
         entityManager.flush();
         LocalDate to = BIRTH_DATE.minusDays(1);
 
-        List<User> foundUsers = userRepository.findUsersByBirthDateIsGreaterThanEqualAndBirthDateLessThanEqual(minDate, to);
+        List<User> foundUsers = userRepository.findUsersByBirthDateIsGreaterThanEqualAndBirthDateLessThanEqual(MIN_DATE, to);
 
         assertThat(foundUsers.size()).isEqualTo(0);
     }
