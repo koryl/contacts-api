@@ -6,6 +6,7 @@ import io.github.koryl.contacts.dao.PhoneNumberRepository;
 import io.github.koryl.contacts.dao.UserRepository;
 import io.github.koryl.contacts.domain.dto.user.UserDto;
 import io.github.koryl.contacts.domain.dto.contact.ContactDto;
+import io.github.koryl.contacts.domain.entity.contact.EmailAddress;
 import io.github.koryl.contacts.domain.entity.user.User;
 import io.github.koryl.contacts.utilities.mapper.ContactMapper;
 import io.github.koryl.contacts.utilities.mapper.UserMapper;
@@ -20,6 +21,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -130,6 +132,31 @@ public class UserServiceImpl implements UserService {
         List<User> rawUsers = userRepository.findUsersByBirthDateIsGreaterThanEqualAndBirthDateLessThanEqual(fromDate, toDate);
 
         log.info("It was found " + rawUsers.size() + " users having a birth day in this range.");
+
+        return rawUsers
+                .stream()
+                .map(rawUser -> userMapper.mapUserToUserDto(rawUser, getContactsOf(rawUser)))
+                .collect(toList());
+    }
+
+    public List<UserDto> findPeopleByEmail(String email) {
+
+        List<EmailAddress> emails = Lists.newArrayList(emailAddressRepository.findAll());
+        List<User> rawUsers;
+
+        if(email.startsWith("*") && email.endsWith("*")) {
+            rawUsers = emails
+                    .stream()
+                    .filter(e -> e.getValue().contains(email.substring(1, (email.length() - 1))))
+                    .map(EmailAddress::getUser)
+                    .collect(toList());
+        } else {
+            rawUsers = emails
+                    .stream()
+                    .filter(e -> Objects.equals(e.getValue(), email) )
+                    .map(EmailAddress::getUser)
+                    .collect(toList());
+        }
 
         return rawUsers
                 .stream()

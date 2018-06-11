@@ -7,7 +7,10 @@ import java.util.List;
 public interface ContactService {
 
     List<ContactDto> getContactsOfUser(Long id);
+
     ContactDto createNewContact(Long id, ContactDto contactDto);
+
     ContactDto updateContact(Long id, String value, ContactDto contactDto);
+
     void deleteContact(Long id, String value);
 }

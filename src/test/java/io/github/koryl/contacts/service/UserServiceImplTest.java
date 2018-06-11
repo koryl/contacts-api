@@ -4,7 +4,11 @@ import com.google.common.collect.ImmutableList;
 import io.github.koryl.contacts.dao.EmailAddressRepository;
 import io.github.koryl.contacts.dao.PhoneNumberRepository;
 import io.github.koryl.contacts.dao.UserRepository;
+import io.github.koryl.contacts.domain.dto.contact.ContactDto;
+import io.github.koryl.contacts.domain.dto.contact.EmailAddressDto;
 import io.github.koryl.contacts.domain.dto.user.UserDto;
+import io.github.koryl.contacts.domain.entity.contact.Contact;
+import io.github.koryl.contacts.domain.entity.contact.EmailAddress;
 import io.github.koryl.contacts.domain.entity.user.User;
 import io.github.koryl.contacts.utilities.mapper.ContactMapper;
 import io.github.koryl.contacts.utilities.mapper.UserMapper;
@@ -31,6 +35,7 @@ public class UserServiceImplTest {
     private final char gender = 'M';
     private final LocalDate birthDate = LocalDate.parse("1950-01-01");
     private final String pesel = "50010191216";
+    private final List<ContactDto> contacts = Lists.list(new EmailAddressDto("test@test.com"));
 
     private UserService userService;
     private UserRepository userRepository;
@@ -177,5 +182,23 @@ public class UserServiceImplTest {
         Optional<User> deletedUser = userRepository.findById(1L);
 
         assertThat(deletedUser).isNull();
+    }
+
+    @Test
+    public void shouldFindUserByExactEmail() {
+
+        UserDto userWithEmail = new UserDto(1, firstName, lastName, gender, birthDate, pesel, contacts);
+
+        List<EmailAddress> emails = Lists.list(
+                new EmailAddress(1, "test@test.com", testUser),
+                new EmailAddress(2, "test2@test.com", new User()));
+        when(emailAddressRepository.findAll()).thenReturn(emails);
+        when(userMapper.mapUserToUserDto(testUser, Lists.list(new EmailAddressDto("test@test.com")))).thenReturn(userWithEmail);
+
+        List<UserDto> foundUsers = userService.findPeopleByEmail("test@test.com");
+
+        assertThat(foundUsers)
+                .hasSize(1)
+                .doesNotContainNull();
     }
 }

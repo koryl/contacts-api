@@ -53,11 +53,16 @@ public class UserController {
         userService.deleteUserWithId(id);
     }
 
-
     @GetMapping("/findByBirthDayBetween")
     public List<UserDto> findPeopleByBirthDateBetween(@Valid @RequestParam(required = false) String fromDate,
                                                       @Valid @RequestParam(required = false) String toDate) {
 
         return userService.findPeopleByBirthDateBetween(fromDate, toDate);
+    }
+
+    @GetMapping("/findByEmail")
+    public List<UserDto> findPeopleByEmail(@Valid @RequestParam String email) {
+
+        return userService.findPeopleByEmail(email);
     }
 }
