@@ -1,4 +1,4 @@
-package io.github.koryl.contacts.service;
+package io.github.koryl.contacts.service.contact;
 
 import io.github.koryl.contacts.dao.EmailAddressRepository;
 import io.github.koryl.contacts.dao.PhoneNumberRepository;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -42,6 +43,7 @@ public class ContactServiceImpl implements ContactService {
         this.contactDtoFactory = contactDtoFactory;
     }
 
+    @Transactional
     public List<ContactDto> getContactsOfUser(Long id) {
 
         User user = userRepository.findById(id)
@@ -53,6 +55,7 @@ public class ContactServiceImpl implements ContactService {
         return buildContactsFromEmailsAndNumbers(rawEmails, rawNumbers);
     }
 
+    @Transactional
     public ContactDto createNewContact(Long id, ContactDto contactDto) {
 
         User user = userRepository.findById(id)
@@ -63,12 +66,13 @@ public class ContactServiceImpl implements ContactService {
         contact.setUser(user);
         contact = saveContact(contact);
 
-        ContactDto createdContact = contactDtoFactory.getContactDto(contactDto.getContactType());
+        ContactDto createdContact = contactDtoFactory.getContactDto(contactDto.getContactType(), contactDto.getValue());
         createdContact.setValue(contact.getValue());
 
         return createdContact;
     }
 
+    @Transactional
     public ContactDto updateContact(Long id, String value, ContactDto contactDto) {
 
         userRepository.findById(id)
@@ -91,12 +95,13 @@ public class ContactServiceImpl implements ContactService {
         contact.setValue(contactDto.getValue());
         contact = saveContact(contact);
 
-        ContactDto updatedContact = contactDtoFactory.getContactDto(contactDto.getContactType());
+        ContactDto updatedContact = contactDtoFactory.getContactDto(contactDto.getContactType(), contactDto.getValue());
         updatedContact.setValue(contact.getValue());
 
         return updatedContact;
     }
 
+    @Transactional
     public void deleteContact(Long id, String value) {
 
         userRepository.findById(id)
@@ -133,7 +138,8 @@ public class ContactServiceImpl implements ContactService {
                 .collect(Collectors.toList());
     }
 
-    private Contact saveContact(Contact contact) {
+    @Transactional
+    Contact saveContact(Contact contact) {
 
         try {
             if (contact instanceof EmailAddress) {

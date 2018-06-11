@@ -1,8 +1,8 @@
 package io.github.koryl.contacts.rest;
 
 import io.github.koryl.contacts.domain.dto.user.UserDto;
-import io.github.koryl.contacts.service.UserService;
-import io.github.koryl.contacts.service.UserServiceImpl;
+import io.github.koryl.contacts.service.user.UserService;
+import io.github.koryl.contacts.service.user.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

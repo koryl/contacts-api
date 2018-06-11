@@ -8,16 +8,16 @@ import io.github.koryl.contacts.domain.dto.contact.ContactDto;
 import io.github.koryl.contacts.domain.dto.contact.EmailAddressDto;
 import io.github.koryl.contacts.domain.dto.contact.PhoneNumberDto;
 import io.github.koryl.contacts.domain.dto.user.UserDto;
-import io.github.koryl.contacts.domain.entity.contact.Contact;
 import io.github.koryl.contacts.domain.entity.contact.EmailAddress;
 import io.github.koryl.contacts.domain.entity.contact.PhoneNumber;
 import io.github.koryl.contacts.domain.entity.user.User;
+import io.github.koryl.contacts.service.user.UserService;
+import io.github.koryl.contacts.service.user.UserServiceImpl;
 import io.github.koryl.contacts.utilities.mapper.ContactMapper;
 import io.github.koryl.contacts.utilities.mapper.UserMapper;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
 import java.time.LocalDate;
@@ -47,9 +47,8 @@ public class UserServiceImplTest {
         userRepository = mock(UserRepository.class);
         emailAddressRepository = mock(EmailAddressRepository.class);
         phoneNumberRepository = mock(PhoneNumberRepository.class);
-        ModelMapper modelMapper = new ModelMapper();
-        UserMapper userMapper = new UserMapper(modelMapper);
-        ContactMapper contactMapper = new ContactMapper(modelMapper);
+        UserMapper userMapper = new UserMapper();
+        ContactMapper contactMapper = new ContactMapper();
         userService = new UserServiceImpl(userRepository, emailAddressRepository, phoneNumberRepository, userMapper, contactMapper);
 
         testUser = new User(1, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL);

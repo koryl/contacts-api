@@ -5,7 +5,7 @@ import io.github.koryl.contacts.domain.ContactType;
 import io.github.koryl.contacts.domain.dto.contact.ContactDto;
 import io.github.koryl.contacts.domain.dto.contact.EmailAddressDto;
 import io.github.koryl.contacts.domain.dto.contact.PhoneNumberDto;
-import io.github.koryl.contacts.service.ContactServiceImpl;
+import io.github.koryl.contacts.service.contact.ContactServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlTransient;
 
 @Data
 @Table(name = "emails")
@@ -24,6 +25,7 @@ public class EmailAddress implements Contact {
     @Column(name = "email_address", unique = true, length = 100)
     private String value;
 
+    @XmlTransient
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

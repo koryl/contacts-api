@@ -1,4 +1,4 @@
-package io.github.koryl.contacts.service;
+package io.github.koryl.contacts.service.user;
 
 import com.google.common.collect.Lists;
 import io.github.koryl.contacts.dao.EmailAddressRepository;
@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -49,6 +50,7 @@ public class UserServiceImpl implements UserService {
         this.contactMapper = contactMapper;
     }
 
+    @Transactional
     public List<UserDto> getAllUsers() {
 
         List<User> rawUsers = Lists.newArrayList(userRepository.findAll());
@@ -61,6 +63,7 @@ public class UserServiceImpl implements UserService {
                 .collect(toList());
     }
 
+    @Transactional
     public UserDto getUserById(Long id) {
 
         User rawUser = userRepository.findById(id)
@@ -71,6 +74,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.mapUserToUserDto(rawUser, getContactsOf(rawUser));
     }
 
+    @Transactional
     public UserDto createNewUser(UserDto userDto) {
 
         if (userRepository.findByPesel(userDto.getPesel()).isPresent()) {
@@ -91,6 +95,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
     public UserDto updateUserWithId(Long id, UserDto user) {
 
         User rawUser = userRepository.findById(id)
@@ -102,6 +107,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.mapUserToUserDto(updatedUser, getContactsOf(updatedUser));
     }
 
+    @Transactional
     public void deleteUserWithId(Long id) {
 
         User rawUser = userRepository.findById(id)
@@ -110,7 +116,7 @@ public class UserServiceImpl implements UserService {
         log.info("User with id: " + rawUser.getId() + " was deleted.");
     }
 
-
+    @Transactional
     public List<UserDto> findPeopleByBirthDateBetween(String from, String to) {
 
         LocalDate fromDate;
@@ -138,6 +144,7 @@ public class UserServiceImpl implements UserService {
                 .collect(toList());
     }
 
+    @Transactional
     public List<UserDto> findPeopleByEmail(String email) {
 
         List<EmailAddress> emails = Lists.newArrayList(emailAddressRepository.findAll());
@@ -177,6 +184,7 @@ public class UserServiceImpl implements UserService {
         return userToUpdate;
     }
 
+    @Transactional
     private List<ContactDto> getContactsOf(User user) {
 
         List<ContactDto> contactEmails = contactMapper.mapContactListToContactDtoList(emailAddressRepository.findByUser(user));

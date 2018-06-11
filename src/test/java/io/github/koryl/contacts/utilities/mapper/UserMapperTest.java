@@ -6,7 +6,6 @@ import io.github.koryl.contacts.domain.entity.user.User;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
-import org.modelmapper.ModelMapper;
 
 import java.util.Objects;
 
@@ -23,11 +22,10 @@ public class UserMapperTest {
     @Before
     public void setUp() {
 
-        ModelMapper modelMapper = new ModelMapper();
-        userMapper = new UserMapper(modelMapper);
+        userMapper = new UserMapper();
 
         testUser = new User(1, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL);
-        testUserDto = new UserDto(1, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL, null);
+        testUserDto = new UserDto(1, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL, Lists.emptyList());
     }
 
     @Test

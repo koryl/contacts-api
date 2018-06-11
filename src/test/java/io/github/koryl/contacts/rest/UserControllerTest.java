@@ -5,7 +5,7 @@ import io.github.koryl.contacts.domain.dto.contact.ContactDto;
 import io.github.koryl.contacts.domain.dto.contact.EmailAddressDto;
 import io.github.koryl.contacts.domain.dto.contact.PhoneNumberDto;
 import io.github.koryl.contacts.domain.dto.user.UserDto;
-import io.github.koryl.contacts.service.UserServiceImpl;
+import io.github.koryl.contacts.service.user.UserServiceImpl;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;

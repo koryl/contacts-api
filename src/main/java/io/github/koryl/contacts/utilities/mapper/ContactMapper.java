@@ -1,52 +1,37 @@
 package io.github.koryl.contacts.utilities.mapper;
 
 import io.github.koryl.contacts.domain.dto.contact.ContactDto;
-import io.github.koryl.contacts.domain.dto.contact.EmailAddressDto;
-import io.github.koryl.contacts.domain.dto.contact.PhoneNumberDto;
+import io.github.koryl.contacts.domain.dto.contact.ContactDtoFactory;
 import io.github.koryl.contacts.domain.entity.contact.Contact;
 import io.github.koryl.contacts.domain.entity.contact.EmailAddress;
 import io.github.koryl.contacts.domain.entity.contact.PhoneNumber;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static io.github.koryl.contacts.domain.ContactType.EMAIL_ADDRESS;
+import static io.github.koryl.contacts.domain.ContactType.PHONE_NUMBER;
+
 @Component
 public class ContactMapper {
 
-    private final ModelMapper modelMapper;
-
-    @Autowired
-    public ContactMapper(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
-    }
-
     public List<ContactDto> mapContactListToContactDtoList(List<? extends Contact> contactList) {
+
+        ContactDtoFactory contactDtoFactory = new ContactDtoFactory();
 
         return contactList
                 .stream()
                 .map(contact -> {
+                    String value = contact.getValue();
                     if (contact instanceof EmailAddress) {
-                        return modelMapper.map(contact, EmailAddressDto.class);
+                        return contactDtoFactory.getContactDto(EMAIL_ADDRESS, value);
                     } else if (contact instanceof PhoneNumber) {
-                        return modelMapper.map(contact, PhoneNumberDto.class);
+                        return contactDtoFactory.getContactDto(PHONE_NUMBER, value);
                     } else {
                         throw new RuntimeException("Cannot map provided contact list - unknown type of contacts.");
                     }
                 })
                 .collect(Collectors.toList());
-    }
-
-    public Contact mapContactDtoToContact(ContactDto contactDto) {
-
-        if (contactDto instanceof EmailAddress) {
-            return modelMapper.map(contactDto, EmailAddress.class);
-        } else if (contactDto instanceof PhoneNumber) {
-            return modelMapper.map(contactDto, PhoneNumber.class);
-        } else {
-            throw new RuntimeException("Cannot map provided contact dto - unknown type of contact.");
-        }
     }
 }

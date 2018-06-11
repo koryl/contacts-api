@@ -13,6 +13,8 @@ import io.github.koryl.contacts.domain.entity.contact.EmailAddress;
 import io.github.koryl.contacts.domain.entity.contact.PhoneNumber;
 import io.github.koryl.contacts.domain.entity.user.User;
 
+import io.github.koryl.contacts.service.contact.ContactService;
+import io.github.koryl.contacts.service.contact.ContactServiceImpl;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;

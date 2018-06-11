@@ -1,4 +1,4 @@
-package io.github.koryl.contacts.service;
+package io.github.koryl.contacts.service.user;
 
 import io.github.koryl.contacts.domain.dto.user.UserDto;
 

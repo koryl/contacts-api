@@ -5,7 +5,7 @@
 
 	<groupId>io.github.koryl</groupId>
 	<artifactId>contacts-api</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.2.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>contacts-api</name>
@@ -32,7 +32,7 @@
 		<java.version>1.8</java.version>
 
 		<guava.version>25.1-jre</guava.version>
-		<modelmapper.version>2.0.0</modelmapper.version>
+		<wsdl4j.version>1.6.3</wsdl4j.version>
 		<assertj.version>3.10.0</assertj.version>
 	</properties>
 
@@ -44,6 +44,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-rest</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web-services</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -72,9 +76,9 @@
 			<version>${guava.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.modelmapper</groupId>
-			<artifactId>modelmapper</artifactId>
-			<version>${modelmapper.version}</version>
+			<groupId>wsdl4j</groupId>
+			<artifactId>wsdl4j</artifactId>
+			<version>${wsdl4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.assertj</groupId>
@@ -89,6 +93,26 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>2.3.1</version>
+				<executions>
+					<execution>
+						<id>xjc-schema</id>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<sources>
+						<source>src/main/resources/xsd</source>
+					</sources>
+					<packageName>io.github.koryl.contacts.soap.ws</packageName>
+					<clearOutputDir>false</clearOutputDir>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

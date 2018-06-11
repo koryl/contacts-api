@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://localhost:8080/users-ws"
+           xmlns:tns="http://localhost:8080/users-ws" elementFormDefault="qualified">
+
+    <xs:element name="findPeopleByEmailRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="value" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="findPeopleByEmailResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="user" type="tns:user" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="user">
+        <xs:sequence>
+            <xs:element name="id" type="xs:long"/>
+            <xs:element name="firstName" type="xs:string"/>
+            <xs:element name="lastName" type="xs:string"/>
+            <xs:element name="gender" type="xs:string"/>
+            <xs:element name="birthDate" type="xs:date"/>
+            <xs:element name="pesel" type="xs:int"/>
+            <xs:element name="contacts">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="contact">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="value" type="xs:string"/>
+                                </xs:sequence>
+                                <xs:attribute name="contactType" type="xs:string"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>
