@@ -64,8 +64,7 @@ public class ContactServiceImpl implements ContactService {
         contact = saveContact(contact);
 
         ContactDto createdContact = contactDtoFactory.getContactDto(contactDto.getContactType());
-        String value = contact.getValue();
-        createdContact.setValue(value);
+        createdContact.setValue(contact.getValue());
 
         return createdContact;
     }

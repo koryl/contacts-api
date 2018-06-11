@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
+import static io.github.koryl.contacts.TestData.*;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.BDDMockito.*;
@@ -50,11 +51,12 @@ public class UserControllerTest {
     public void initUsers() {
 
         List<ContactDto> contacts = Arrays.asList(
-                new EmailAddressDto("test@test.com"),
-                new PhoneNumberDto("123456789")
+
+                new EmailAddressDto(EMAIL_ADDRESS_VALUE),
+                new PhoneNumberDto(PHONE_NUMBER_VALUE)
         );
 
-        this.testUser1 = new UserDto(1, "Jan", "Kowalski", 'M', LocalDate.parse("1950-01-01"), "50010191216", contacts);
+        this.testUser1 = new UserDto(1, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL, contacts);
         this.testUser2 = new UserDto(2, "Anna", "Nowak", 'F', LocalDate.parse("1975-05-30"), "75063092802", Lists.emptyList());
 
         users = Arrays.asList(testUser1, testUser2);
@@ -70,15 +72,15 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].firstName", is(testUser1.getFirstName())))
+                .andExpect(jsonPath("$[0].firstName", is(FIRST_NAME)))
                 .andExpect(jsonPath("$[1].firstName", is(testUser2.getFirstName())))
-                .andExpect(jsonPath("$[0].lastName", is(testUser1.getLastName())))
-                .andExpect(jsonPath("$[0].gender", is(String.valueOf(testUser1.getGender()))))
-                .andExpect(jsonPath("$[0].birthDate", is(testUser1.getBirthDate().toString())))
-                .andExpect(jsonPath("$[0].pesel", is(testUser1.getPesel())))
+                .andExpect(jsonPath("$[0].lastName", is(LAST_NAME)))
+                .andExpect(jsonPath("$[0].gender", is(String.valueOf(GENDER))))
+                .andExpect(jsonPath("$[0].birthDate", is(BIRTH_DATE.toString())))
+                .andExpect(jsonPath("$[0].pesel", is(PESEL)))
                 .andExpect(jsonPath("$[0].contacts", hasSize(2)))
-                .andExpect(jsonPath("$[0].contacts[0].value", is("test@test.com")))
-                .andExpect(jsonPath("$[0].contacts[1].value", is("123456789")));
+                .andExpect(jsonPath("$[0].contacts[0].value", is(EMAIL_ADDRESS_VALUE)))
+                .andExpect(jsonPath("$[0].contacts[1].value", is(PHONE_NUMBER_VALUE)));
     }
 
     @Test
@@ -90,14 +92,14 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.firstName", is(testUser1.getFirstName())))
-                .andExpect(jsonPath("$.lastName", is(testUser1.getLastName())))
-                .andExpect(jsonPath("$.gender", is(String.valueOf(testUser1.getGender()))))
-                .andExpect(jsonPath("$.birthDate", is(testUser1.getBirthDate().toString())))
-                .andExpect(jsonPath("$.pesel", is(testUser1.getPesel())))
+                .andExpect(jsonPath("$.firstName", is(FIRST_NAME)))
+                .andExpect(jsonPath("$.lastName", is(LAST_NAME)))
+                .andExpect(jsonPath("$.gender", is(String.valueOf(GENDER))))
+                .andExpect(jsonPath("$.birthDate", is(BIRTH_DATE.toString())))
+                .andExpect(jsonPath("$.pesel", is(PESEL)))
                 .andExpect(jsonPath("$.contacts", hasSize(2)))
-                .andExpect(jsonPath("$.contacts[0].value", is("test@test.com")))
-                .andExpect(jsonPath("$.contacts[1].value", is("123456789")));
+                .andExpect(jsonPath("$.contacts[0].value", is(EMAIL_ADDRESS_VALUE)))
+                .andExpect(jsonPath("$.contacts[1].value", is(PHONE_NUMBER_VALUE)));
     }
 
     @Test
@@ -111,16 +113,18 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.firstName", is(testUser1.getFirstName())))
-                .andExpect(jsonPath("$.gender", is(String.valueOf(testUser1.getGender()))));
+                .andExpect(jsonPath("$.firstName", is(FIRST_NAME)))
+                .andExpect(jsonPath("$.pesel", is(PESEL)))
+                .andExpect(jsonPath("$.gender", is(String.valueOf(GENDER))));
     }
 
     @Test
     public void shouldUpdateUser() throws Exception {
 
-        String updatedFirstName = "Stanislaw";
         String updatedLastName = "Nowak";
-        UserDto updatedTestUser = new UserDto(1, updatedFirstName, updatedLastName, 'M', LocalDate.parse("1950-01-01"), "50010191216", Lists.emptyList());
+        String updatedFirstName = "Stanislaw";
+
+        UserDto updatedTestUser = new UserDto(1, updatedFirstName, updatedLastName, GENDER, BIRTH_DATE, PESEL, Lists.emptyList());
 
         updatedTestUser.setFirstName(updatedFirstName);
         updatedTestUser.setLastName(updatedLastName);

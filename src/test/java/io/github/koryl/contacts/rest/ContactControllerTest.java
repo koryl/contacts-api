@@ -19,6 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.List;
 
+import static io.github.koryl.contacts.TestData.EMAIL_ADDRESS_VALUE;
+import static io.github.koryl.contacts.TestData.PHONE_NUMBER_VALUE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.Mockito.when;
@@ -42,18 +44,16 @@ public class ContactControllerTest {
     private List<ContactDto> contacts;
     private EmailAddressDto emailAddress;
     private PhoneNumberDto phoneNumber;
-    private String emailAddressValue = "test@test.com";
-    private String phoneNumberValue = "123456789";
 
     @Before
     public void setUp() {
 
-        emailAddress = new EmailAddressDto(emailAddressValue);
-        phoneNumber = new PhoneNumberDto(phoneNumberValue);
+        emailAddress = new EmailAddressDto(EMAIL_ADDRESS_VALUE);
+        phoneNumber = new PhoneNumberDto(PHONE_NUMBER_VALUE);
 
         contacts = Arrays.asList(
-                new EmailAddressDto(emailAddressValue),
-                new PhoneNumberDto(phoneNumberValue)
+                new EmailAddressDto(EMAIL_ADDRESS_VALUE),
+                new PhoneNumberDto(PHONE_NUMBER_VALUE)
         );
     }
 
@@ -68,16 +68,16 @@ public class ContactControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].contactType", is(ContactType.EMAIL_ADDRESS.name())))
-                .andExpect(jsonPath("$[0].value", is(emailAddressValue)))
+                .andExpect(jsonPath("$[0].value", is(EMAIL_ADDRESS_VALUE)))
                 .andExpect(jsonPath("$[1].contactType", is(ContactType.PHONE_NUMBER.name())))
-                .andExpect(jsonPath("$[1].value", is(phoneNumberValue)));
+                .andExpect(jsonPath("$[1].value", is(PHONE_NUMBER_VALUE)));
     }
 
     @Test
     public void shouldReturnNewContactAfterAddingEmailAddress() throws Exception {
 
         String jsonEmail = objectMapper.writeValueAsString(emailAddress);
-        when(contactService.createNewContact(1L, new EmailAddressDto(emailAddressValue))).thenReturn(emailAddress);
+        when(contactService.createNewContact(1L, new EmailAddressDto(EMAIL_ADDRESS_VALUE))).thenReturn(emailAddress);
 
         mockMvc.perform(post("/users/{id}/contacts", 1)
                 .content(jsonEmail)
@@ -85,14 +85,14 @@ public class ContactControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.contactType", is(ContactType.EMAIL_ADDRESS.name())))
-                .andExpect(jsonPath("$.value", is(emailAddressValue)));
+                .andExpect(jsonPath("$.value", is(EMAIL_ADDRESS_VALUE)));
     }
 
     @Test
     public void shouldReturnNewContactAfterAddingPhoneNumber() throws Exception {
 
         String jsonPhone = objectMapper.writeValueAsString(phoneNumber);
-        when(contactService.createNewContact(1L, new PhoneNumberDto(phoneNumberValue))).thenReturn(phoneNumber);
+        when(contactService.createNewContact(1L, new PhoneNumberDto(PHONE_NUMBER_VALUE))).thenReturn(phoneNumber);
 
         mockMvc.perform(post("/users/{id}/contacts", 1)
                 .content(jsonPhone)
@@ -100,7 +100,7 @@ public class ContactControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.contactType", is(ContactType.PHONE_NUMBER.name())))
-                .andExpect(jsonPath("$.value", is(phoneNumberValue)));
+                .andExpect(jsonPath("$.value", is(PHONE_NUMBER_VALUE)));
     }
 
     @Test
@@ -110,10 +110,10 @@ public class ContactControllerTest {
         EmailAddressDto updatedEmailAddress = new EmailAddressDto(updatedEmailValue);
         String jsonEmail = objectMapper.writeValueAsString(updatedEmailAddress);
 
-        when(contactService.updateContact(1L, emailAddressValue, updatedEmailAddress)).thenReturn(updatedEmailAddress);
+        when(contactService.updateContact(1L, EMAIL_ADDRESS_VALUE, updatedEmailAddress)).thenReturn(updatedEmailAddress);
 
         mockMvc.perform(put("/users/{id}/contacts/updateContact", 1)
-                .param("value", emailAddressValue)
+                .param("value", EMAIL_ADDRESS_VALUE)
                 .content(jsonEmail)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -129,10 +129,10 @@ public class ContactControllerTest {
         PhoneNumberDto updatedPhoneNumber = new PhoneNumberDto(updatedPhoneNumberValue);
         String jsonPhoneNumber = objectMapper.writeValueAsString(updatedPhoneNumber);
 
-        when(contactService.updateContact(1L, phoneNumberValue, updatedPhoneNumber)).thenReturn(updatedPhoneNumber);
+        when(contactService.updateContact(1L, PHONE_NUMBER_VALUE, updatedPhoneNumber)).thenReturn(updatedPhoneNumber);
 
         mockMvc.perform(put("/users/{id}/contacts/updateContact", 1)
-                .param("value", phoneNumberValue)
+                .param("value", PHONE_NUMBER_VALUE)
                 .content(jsonPhoneNumber)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -145,7 +145,7 @@ public class ContactControllerTest {
     public void shouldReturnStatusOkAfterDeleteContact() throws Exception {
 
         mockMvc.perform(delete("/users/{id}/contacts/deleteContact", 1)
-                .param("value", emailAddressValue))
+                .param("value", EMAIL_ADDRESS_VALUE))
                 .andExpect(status().isOk());
     }
 }

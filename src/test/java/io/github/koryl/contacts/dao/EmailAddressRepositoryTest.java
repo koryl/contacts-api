@@ -10,31 +10,21 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static io.github.koryl.contacts.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class EmailAddressRepositoryTest {
 
-    private final String firstName = "Jan";
-    private final String lastName = "Kowalski";
-    private final char gender = 'M';
-    private final LocalDate birthDate = LocalDate.parse("1950-01-01");
-    private final String pesel = "50010191216";
-
-    private final String value = "test@test.com";
-
     @Autowired
     private TestEntityManager entityManager;
 
     @Autowired
     private EmailAddressRepository emailAddressRepository;
-    @Autowired
-    private UserRepository userRepository;
 
     private EmailAddress testEmail;
     private User testUser;
@@ -42,8 +32,8 @@ public class EmailAddressRepositoryTest {
     @Before
     public void setUpTestUser() {
 
-        testUser = new User(0, firstName, lastName, gender, birthDate, pesel);
-        testEmail = new EmailAddress(0, value, testUser);
+        testUser = new User(0, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL);
+        testEmail = new EmailAddress(0, EMAIL_ADDRESS_VALUE, testUser);
 
         entityManager.persist(testUser);
         entityManager.flush();
@@ -76,7 +66,7 @@ public class EmailAddressRepositoryTest {
         entityManager.persist(testEmail);
         entityManager.flush();
 
-        Optional<EmailAddress> foundEmail = emailAddressRepository.findByValue(value);
+        Optional<EmailAddress> foundEmail = emailAddressRepository.findByValue(EMAIL_ADDRESS_VALUE);
 
         assertThat(foundEmail)
                 .isNotNull()

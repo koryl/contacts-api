@@ -144,7 +144,7 @@ public class UserServiceImpl implements UserService {
         List<EmailAddress> emails = Lists.newArrayList(emailAddressRepository.findAll());
         List<User> rawUsers;
 
-        if(email.startsWith("*") && email.endsWith("*")) {
+        if (email.startsWith("*") && email.endsWith("*")) {
             rawUsers = emails
                     .stream()
                     .filter(e -> e.getValue().contains(email.substring(1, (email.length() - 1))))
@@ -153,7 +153,7 @@ public class UserServiceImpl implements UserService {
         } else {
             rawUsers = emails
                     .stream()
-                    .filter(e -> Objects.equals(e.getValue(), email) )
+                    .filter(e -> Objects.equals(e.getValue(), email))
                     .map(EmailAddress::getUser)
                     .collect(toList());
         }

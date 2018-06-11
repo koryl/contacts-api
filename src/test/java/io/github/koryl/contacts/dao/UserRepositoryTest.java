@@ -15,18 +15,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static io.github.koryl.contacts.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class UserRepositoryTest {
-
-    private final String firstName = "Jan";
-    private final String lastName = "Kowalski";
-    private final char gender = 'M';
-    private final LocalDate birthDate = LocalDate.parse("1950-01-01");
-    private final String pesel = "50010191216";
 
     private final LocalDate minDate = LocalDate.parse("1918-01-01");
     private final LocalDate maxDate = LocalDate.now();
@@ -43,7 +38,7 @@ public class UserRepositoryTest {
     @Before
     public void setUpTestUser() {
 
-        testUser = new User(0, firstName, lastName, gender, birthDate, pesel);
+        testUser = new User(0, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL);
     }
 
     @Test
@@ -51,8 +46,8 @@ public class UserRepositoryTest {
 
         entityManager.persist(testUser);
         entityManager.flush();
-        LocalDate from = birthDate.minusDays(1);
-        LocalDate to = birthDate.plusDays(1);
+        LocalDate from = BIRTH_DATE.minusDays(1);
+        LocalDate to = BIRTH_DATE.plusDays(1);
 
         List<User> foundUsers = userRepository.findUsersByBirthDateIsGreaterThanEqualAndBirthDateLessThanEqual(from, to);
 
@@ -67,7 +62,7 @@ public class UserRepositoryTest {
 
         entityManager.persist(testUser);
         entityManager.flush();
-        LocalDate from = birthDate.plusDays(1);
+        LocalDate from = BIRTH_DATE.plusDays(1);
 
         List<User> foundUsers = userRepository.findUsersByBirthDateIsGreaterThanEqualAndBirthDateLessThanEqual(from, maxDate);
 
@@ -79,7 +74,7 @@ public class UserRepositoryTest {
 
         entityManager.persist(testUser);
         entityManager.flush();
-        LocalDate to = birthDate.minusDays(1);
+        LocalDate to = BIRTH_DATE.minusDays(1);
 
         List<User> foundUsers = userRepository.findUsersByBirthDateIsGreaterThanEqualAndBirthDateLessThanEqual(minDate, to);
 
@@ -89,8 +84,8 @@ public class UserRepositoryTest {
     @Test
     public void shouldThrowExceptionWhenAlreadyExistingPesel() {
 
-        User testUser1 = new User(0, "Test", "Test", 'M', LocalDate.parse("1950-01-01"), pesel);
-        User testUser2 = new User(0, "Test", "Test", 'M', LocalDate.parse("1950-01-01"), pesel);
+        User testUser1 = new User(0, "Test1", "Test1", 'M', LocalDate.parse("1950-01-01"), PESEL);
+        User testUser2 = new User(0, "Test2", "Test2", 'F', LocalDate.parse("1950-01-01"), PESEL);
 
         Throwable thrown = catchThrowable(() -> {
             userRepository.save(testUser1);
@@ -109,7 +104,7 @@ public class UserRepositoryTest {
         entityManager.persist(anotherUser);
         entityManager.flush();
 
-        Optional<User> foundUser = userRepository.findByPesel(pesel);
+        Optional<User> foundUser = userRepository.findByPesel(PESEL);
 
         assertThat(foundUser)
                 .contains(testUser);
