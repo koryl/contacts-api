@@ -38,7 +38,7 @@ public class UserMapperTest {
         userMapper = new UserMapper(modelMapper);
 
         testUser = new User(1, firstName, lastName, gender, birthDate, pesel);
-        testUserDto = new UserDto(1, firstName, lastName, gender, birthDate, pesel, Lists.list(new EmailAddressDto(emailValue, 1L)));
+        testUserDto = new UserDto(1, firstName, lastName, gender, birthDate, pesel, Lists.list(new EmailAddressDto(emailValue)));
 
     }
 
@@ -47,7 +47,7 @@ public class UserMapperTest {
 
         when(modelMapper.map(testUser, UserDto.class)).thenReturn(testUserDto);
 
-        UserDto mappedUser = userMapper.mapUserToUserDto(testUser, Lists.list(new EmailAddressDto(emailValue, 1L)));
+        UserDto mappedUser = userMapper.mapUserToUserDto(testUser, Lists.list(new EmailAddressDto(emailValue)));
 
         assertThat(mappedUser)
                 .isNotNull()

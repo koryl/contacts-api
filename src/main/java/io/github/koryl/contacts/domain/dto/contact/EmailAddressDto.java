@@ -19,12 +19,8 @@ public class EmailAddressDto implements ContactDto {
     @NotEmpty
     private String value;
 
-    @NotNull
-    private Long userId;
-
-    public EmailAddressDto(@Email String value, long userId) {
+    public EmailAddressDto(@Email String value) {
 
         this.value = value;
-        this.userId = userId;
     }
 }

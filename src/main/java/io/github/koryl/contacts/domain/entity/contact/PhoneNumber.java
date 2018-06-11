@@ -1,7 +1,9 @@
 package io.github.koryl.contacts.domain.entity.contact;
 
 import io.github.koryl.contacts.domain.entity.user.User;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -10,6 +12,8 @@ import javax.persistence.*;
 @Data
 @Table(name = "phone_numbers")
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class PhoneNumber implements Contact {
 
     @Id

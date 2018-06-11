@@ -9,7 +9,6 @@ import io.github.koryl.contacts.domain.entity.contact.ContactFactory;
 import io.github.koryl.contacts.domain.entity.contact.EmailAddress;
 import io.github.koryl.contacts.domain.entity.contact.PhoneNumber;
 import io.github.koryl.contacts.domain.entity.user.User;
-import io.github.koryl.contacts.utilities.mapper.ContactMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,17 +31,15 @@ public class ContactServiceImpl implements ContactService {
     private final UserRepository userRepository;
     private final ContactFactory contactFactory;
     private final ContactDtoFactory contactDtoFactory;
-    private final ContactMapper contactMapper;
 
     @Autowired
-    public ContactServiceImpl(UserRepository userRepository, EmailAddressRepository emailAddressRepository, PhoneNumberRepository phoneNumberRepository, ContactFactory contactFactory, ContactDtoFactory contactDtoFactory, ContactMapper contactMapper) {
+    public ContactServiceImpl(UserRepository userRepository, EmailAddressRepository emailAddressRepository, PhoneNumberRepository phoneNumberRepository, ContactFactory contactFactory, ContactDtoFactory contactDtoFactory) {
 
         this.userRepository = userRepository;
         this.emailAddressRepository = emailAddressRepository;
         this.phoneNumberRepository = phoneNumberRepository;
         this.contactFactory = contactFactory;
         this.contactDtoFactory = contactDtoFactory;
-        this.contactMapper = contactMapper;
     }
 
     public List<ContactDto> getContactsOfUser(Long id) {
@@ -61,24 +58,23 @@ public class ContactServiceImpl implements ContactService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with id: " + id + " not found."));
 
-        contactDto.setUserId(user.getId());
         Contact contact = contactFactory.getContact(contactDto.getContactType());
         contact.setValue(contactDto.getValue());
         contact.setUser(user);
         contact = saveContact(contact);
 
         ContactDto createdContact = contactDtoFactory.getContactDto(contactDto.getContactType());
-        createdContact.setValue(contact.getValue());
-        createdContact.setUserId(contact.getUser().getId());
+        String value = contact.getValue();
+        createdContact.setValue(value);
 
         return createdContact;
     }
 
     public ContactDto updateContact(Long id, String value, ContactDto contactDto) {
 
-        if (!userRepository.findById(id).isPresent()) {
-            throw new ResourceNotFoundException("User with id: " + id + " not found.");
-        }
+        userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User with id: " + id + " not found."));
+
         Contact contact;
 
         switch (contactDto.getContactType()) {
@@ -98,16 +94,14 @@ public class ContactServiceImpl implements ContactService {
 
         ContactDto updatedContact = contactDtoFactory.getContactDto(contactDto.getContactType());
         updatedContact.setValue(contact.getValue());
-        updatedContact.setUserId(contact.getUser().getId());
 
         return updatedContact;
     }
 
     public void deleteContact(Long id, String value) {
 
-        if (!userRepository.findById(id).isPresent()) {
-            throw new ResourceNotFoundException("User with id: " + id + " not found.");
-        }
+        userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User with id: " + id + " not found."));
 
         Optional<? extends Contact> opContact =
                 Stream.of(emailAddressRepository.findByValue(value), phoneNumberRepository.findByValue(value))
@@ -118,6 +112,7 @@ public class ContactServiceImpl implements ContactService {
         if (opContact.isPresent() && opContact.get() instanceof EmailAddress) {
             EmailAddress email = (EmailAddress) opContact.get();
             emailAddressRepository.delete(email);
+
         } else if (opContact.isPresent() && opContact.get() instanceof PhoneNumber) {
             PhoneNumber number = (PhoneNumber) opContact.get();
             phoneNumberRepository.delete(number);
@@ -127,11 +122,11 @@ public class ContactServiceImpl implements ContactService {
     private List<ContactDto> buildContactsFromEmailsAndNumbers(List<EmailAddress> emails, List<PhoneNumber> numbers) {
 
         List<ContactDto> contactEmails = emails.stream()
-                .map(email -> new EmailAddressDto(email.getValue(), email.getUser().getId()))
+                .map(email -> new EmailAddressDto(email.getValue()))
                 .collect(Collectors.toList());
 
         List<ContactDto> contactNumbers = numbers.stream()
-                .map(number -> new PhoneNumberDto(number.getValue(), number.getUser().getId()))
+                .map(number -> new PhoneNumberDto(number.getValue()))
                 .collect(Collectors.toList());
 
         return Stream.of(contactEmails, contactNumbers)

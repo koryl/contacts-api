@@ -51,8 +51,8 @@ public class UserControllerTest {
     public void initUsers() {
 
         List<ContactDto> contacts = Arrays.asList(
-                new EmailAddressDto("test@test.com", 1),
-                new PhoneNumberDto("123456789", 1)
+                new EmailAddressDto("test@test.com"),
+                new PhoneNumberDto("123456789")
         );
 
         this.testUser1 = new UserDto(1, "Jan", "Kowalski", 'M', LocalDate.parse("1950-01-01"), "50010191216", contacts);

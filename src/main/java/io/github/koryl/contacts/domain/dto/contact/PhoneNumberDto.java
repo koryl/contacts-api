@@ -19,12 +19,8 @@ public class PhoneNumberDto implements ContactDto {
     @Pattern(regexp = "[0-9]+")
     private String value;
 
-    @NotNull
-    private Long userId;
-
-    public PhoneNumberDto(@NotEmpty @Pattern(regexp = "[0-9]+") String value, long userId) {
+    public PhoneNumberDto(@NotEmpty @Pattern(regexp = "[0-9]+") String value) {
 
         this.value = value;
-        this.userId = userId;
     }
 }
