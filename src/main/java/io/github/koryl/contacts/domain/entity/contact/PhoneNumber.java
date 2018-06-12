@@ -25,7 +25,6 @@ public class PhoneNumber implements Contact {
     @Column(name = "phone_number", unique = true, length = 20)
     private String value;
 
-    @XmlTransient
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

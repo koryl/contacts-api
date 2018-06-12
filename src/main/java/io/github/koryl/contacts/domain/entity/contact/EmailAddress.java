@@ -25,7 +25,6 @@ public class EmailAddress implements Contact {
     @Column(name = "email_address", unique = true, length = 100)
     private String value;
 
-    @XmlTransient
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

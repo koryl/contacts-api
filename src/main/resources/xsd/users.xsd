@@ -25,22 +25,15 @@
             <xs:element name="lastName" type="xs:string"/>
             <xs:element name="gender" type="xs:string"/>
             <xs:element name="birthDate" type="xs:date"/>
-            <xs:element name="pesel" type="xs:int"/>
-            <xs:element name="contacts">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="contact">
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:element name="value" type="xs:string"/>
-                                </xs:sequence>
-                                <xs:attribute name="contactType" type="xs:string"/>
-                            </xs:complexType>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
+            <xs:element name="pesel" type="xs:string"/>
+            <xs:element name="contacts" type="tns:contact" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 
+    <xs:complexType name="contact">
+        <xs:sequence>
+            <xs:element name="contactType" type="xs:string"/>
+            <xs:element name="value" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
 </xs:schema>

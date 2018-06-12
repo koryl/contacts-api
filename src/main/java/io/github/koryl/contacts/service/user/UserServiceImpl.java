@@ -155,6 +155,7 @@ public class UserServiceImpl implements UserService {
                     .stream()
                     .filter(e -> e.getValue().contains(email.substring(1, (email.length() - 1))))
                     .map(EmailAddress::getUser)
+                    .distinct()
                     .collect(toList());
             log.info("It was found " + rawUsers.size() + " user(s) having such email pattern.");
 
@@ -163,6 +164,7 @@ public class UserServiceImpl implements UserService {
                     .stream()
                     .filter(e -> Objects.equals(e.getValue(), email))
                     .map(EmailAddress::getUser)
+                    .distinct()
                     .collect(toList());
             log.info("It was found " + rawUsers.size() + " user(s) having such email.");
         }
@@ -185,7 +187,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    private List<ContactDto> getContactsOf(User user) {
+    List<ContactDto> getContactsOf(User user) {
 
         List<ContactDto> contactEmails = contactMapper.mapContactListToContactDtoList(emailAddressRepository.findByUser(user));
         List<ContactDto> contactNumbers = contactMapper.mapContactListToContactDtoList(phoneNumberRepository.findByUser(user));

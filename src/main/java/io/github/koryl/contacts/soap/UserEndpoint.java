@@ -1,7 +1,9 @@
 package io.github.koryl.contacts.soap;
 
+import io.github.koryl.contacts.domain.dto.contact.ContactDto;
 import io.github.koryl.contacts.domain.dto.user.UserDto;
 import io.github.koryl.contacts.service.user.UserService;
+import io.github.koryl.contacts.soap.ws.Contact;
 import io.github.koryl.contacts.soap.ws.FindPeopleByEmailRequest;
 import io.github.koryl.contacts.soap.ws.FindPeopleByEmailResponse;
 import io.github.koryl.contacts.soap.ws.User;
@@ -34,20 +36,30 @@ public class UserEndpoint {
 
         FindPeopleByEmailResponse response = new FindPeopleByEmailResponse();
         List<UserDto> users = userService.findPeopleByEmail(request.getValue());
-
+        System.out.println(users);
         List<User> wsUsers = users.stream().map(userDto -> {
             User mappedUser = new User();
+
             try {
+                mappedUser.setId(userDto.getId());
                 mappedUser.setFirstName(userDto.getFirstName());
                 mappedUser.setLastName(userDto.getLastName());
                 mappedUser.setGender(String.valueOf(userDto.getGender()));
                 mappedUser.setBirthDate(DatatypeFactory.newInstance().newXMLGregorianCalendar(userDto.getBirthDate().toString()));
+                mappedUser.setPesel(userDto.getPesel());
+                userDto.getContacts().forEach(con -> {
+                    Contact contact = new Contact();
+                    contact.setContactType(con.getContactType().name());
+                    contact.setValue(con.getValue());
+                    mappedUser.getContacts().add(contact);
+                });
 
             } catch (DatatypeConfigurationException e) {
                 throw new RuntimeException("");
             }
             return mappedUser;
         }).collect(Collectors.toList());
+        
         response.getUser().addAll(wsUsers);
 
         return response;
