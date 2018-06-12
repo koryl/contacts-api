@@ -4,8 +4,8 @@ import io.github.koryl.contacts.domain.dto.contact.ContactDto;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.Objects.*;
 
@@ -25,47 +25,60 @@ public class UserDtoBuilder {
 
     public UserDtoBuilder id(long id) {
 
-        this.id = id;
+        if (id > 0) {
+            this.id = id;
+        }
         return this;
     }
 
     public UserDtoBuilder firstName(String firstName) {
 
-        this.firstName = firstName;
+        if (!Objects.equals(firstName, "") && Objects.nonNull(firstName)) {
+            this.firstName = firstName.trim();
+        }
         return this;
     }
 
     public UserDtoBuilder lastName(String lastName) {
 
-        this.lastName = lastName;
+        if (!Objects.equals(lastName, "") && Objects.nonNull(lastName)) {
+            this.lastName = lastName.trim();
+        }
         return this;
     }
 
     public UserDtoBuilder gender(char gender) {
 
-        this.gender = gender;
+        if (Character.isLetter(gender) && Character.isUpperCase(gender)) {
+            this.gender = gender;
+        }
+
         return this;
     }
 
     public UserDtoBuilder birthDate(LocalDate birthDate) {
 
-        this.birthDate = birthDate;
+        if (Objects.nonNull(birthDate)) {
+            this.birthDate = birthDate;
+        }
+
         return this;
     }
 
     public UserDtoBuilder pesel(String pesel) {
 
-        this.pesel = pesel;
+        if (!Objects.equals(pesel, "") && Objects.nonNull(pesel)) {
+            this.pesel = pesel.trim();
+        }
         return this;
     }
 
     public UserDtoBuilder contacts(List<ContactDto> contactList) {
 
-        if (isNull(contactList)) {
-            this.contacts = new ArrayList<>();
-        } else {
+        if (nonNull(contactList)) {
             this.contacts = contactList;
         }
+
         return this;
     }
 

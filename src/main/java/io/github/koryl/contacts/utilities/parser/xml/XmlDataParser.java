@@ -56,7 +56,7 @@ public class XmlDataParser implements DataParser {
             });
 
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            log.error("It was occured error during parsing xml file.", e);
+            log.error("It was occurred error during parsing xml file.", e);
         }
         return userListMap;
     }

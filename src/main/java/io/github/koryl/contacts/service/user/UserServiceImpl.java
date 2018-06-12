@@ -5,9 +5,10 @@ import io.github.koryl.contacts.dao.EmailAddressRepository;
 import io.github.koryl.contacts.dao.PhoneNumberRepository;
 import io.github.koryl.contacts.dao.UserRepository;
 import io.github.koryl.contacts.domain.dto.user.UserDto;
-import io.github.koryl.contacts.domain.dto.contact.ContactDto;
+import io.github.koryl.contacts.domain.entity.contact.Contact;
 import io.github.koryl.contacts.domain.entity.contact.EmailAddress;
 import io.github.koryl.contacts.domain.entity.user.User;
+import io.github.koryl.contacts.service.contact.ContactOperations;
 import io.github.koryl.contacts.utilities.mapper.ContactMapper;
 import io.github.koryl.contacts.utilities.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Objects.*;
 import static java.util.stream.Collectors.*;
@@ -39,15 +37,17 @@ public class UserServiceImpl implements UserService {
     private final PhoneNumberRepository phoneNumberRepository;
     private final UserMapper userMapper;
     private final ContactMapper contactMapper;
+    private final ContactOperations contactOperations;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, EmailAddressRepository emailAddressRepository, PhoneNumberRepository phoneNumberRepository, UserMapper userMapper, ContactMapper contactMapper) {
+    public UserServiceImpl(UserRepository userRepository, EmailAddressRepository emailAddressRepository, PhoneNumberRepository phoneNumberRepository, UserMapper userMapper, ContactMapper contactMapper, ContactOperations contactOperations) {
 
         this.userRepository = userRepository;
         this.emailAddressRepository = emailAddressRepository;
         this.phoneNumberRepository = phoneNumberRepository;
         this.userMapper = userMapper;
         this.contactMapper = contactMapper;
+        this.contactOperations = contactOperations;
     }
 
     @Transactional
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
 
         return rawUsers
                 .stream()
-                .map(rawUser -> userMapper.mapUserToUserDto(rawUser, getContactsOf(rawUser)))
+                .map(rawUser -> userMapper.mapUserToUserDto(rawUser, contactOperations.getContactsOf(rawUser)))
                 .collect(toList());
     }
 
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
         log.info("It was found user with id " + rawUser.getId() + ".");
 
-        return userMapper.mapUserToUserDto(rawUser, getContactsOf(rawUser));
+        return userMapper.mapUserToUserDto(rawUser, contactOperations.getContactsOf(rawUser));
     }
 
     @Transactional
@@ -82,12 +82,13 @@ public class UserServiceImpl implements UserService {
         }
 
         try {
-
             User mappedUser = userMapper.mapUserDtoToUser(userDto);
             User savedUser = userRepository.save(mappedUser);
+            List<Contact> contacts = contactMapper.mapContactDtoListToContactList(userDto.getContacts(), savedUser);
+            contacts.forEach(contactOperations::saveContact);
             log.info("New user with id: " + savedUser.getId() + " was created.");
 
-            return userMapper.mapUserToUserDto(savedUser, getContactsOf(savedUser));
+            return userMapper.mapUserToUserDto(savedUser, contactOperations.getContactsOf(savedUser));
 
         } catch (ConstraintViolationException | DataIntegrityViolationException e) {
 
@@ -96,15 +97,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public UserDto updateUserWithId(Long id, UserDto user) {
+    public UserDto updateUserWithId(Long id, UserDto userDto) {
 
         User rawUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with id: " + id + " not found."));
-
-        User updatedUser = userRepository.save(updateUserDbWithUserDtoData(rawUser, user));
+        User userToUpdate = updateUserDbWithUserDtoData(rawUser, userDto);
+        User updatedUser = userRepository.save(userToUpdate);
         log.info("User with id: " + updatedUser.getId() + " was updated.");
 
-        return userMapper.mapUserToUserDto(updatedUser, getContactsOf(updatedUser));
+        return userMapper.mapUserToUserDto(updatedUser, contactOperations.getContactsOf(updatedUser));
     }
 
     @Transactional
@@ -140,7 +141,7 @@ public class UserServiceImpl implements UserService {
 
         return rawUsers
                 .stream()
-                .map(rawUser -> userMapper.mapUserToUserDto(rawUser, getContactsOf(rawUser)))
+                .map(rawUser -> userMapper.mapUserToUserDto(rawUser, contactOperations.getContactsOf(rawUser)))
                 .collect(toList());
     }
 
@@ -171,30 +172,27 @@ public class UserServiceImpl implements UserService {
 
         return rawUsers
                 .stream()
-                .map(rawUser -> userMapper.mapUserToUserDto(rawUser, getContactsOf(rawUser)))
+                .map(rawUser -> userMapper.mapUserToUserDto(rawUser, contactOperations.getContactsOf(rawUser)))
                 .collect(toList());
     }
 
     private User updateUserDbWithUserDtoData(User userToUpdate, UserDto userDto) {
 
-        userToUpdate.setFirstName(userDto.getFirstName());
-        userToUpdate.setLastName((userDto.getLastName()));
-        userToUpdate.setGender(userDto.getGender());
-        userToUpdate.setBirthDate(userDto.getBirthDate());
-        userToUpdate.setPesel(userDto.getPesel());
-
+        if (nonNull(userDto.getFirstName()) && !Objects.equals(userDto.getFirstName(), "")) {
+            userToUpdate.setFirstName(userDto.getFirstName().trim());
+        }
+        if (nonNull(userDto.getLastName()) && !Objects.equals(userDto.getLastName(), "")) {
+            userToUpdate.setLastName((userDto.getLastName().trim()));
+        }
+        if (Character.isLetter(userDto.getGender())) {
+            userToUpdate.setGender(userDto.getGender());
+        }
+        if (nonNull(userDto.getBirthDate())) {
+            userToUpdate.setBirthDate(userDto.getBirthDate());
+        }
+        if (nonNull(userDto.getPesel()) && !Objects.equals(userDto.getPesel(), "") && !Objects.equals(userDto.getPesel(), userToUpdate.getPesel())) {
+            userToUpdate.setPesel(userDto.getPesel());
+        }
         return userToUpdate;
-    }
-
-    @Transactional
-    List<ContactDto> getContactsOf(User user) {
-
-        List<ContactDto> contactEmails = contactMapper.mapContactListToContactDtoList(emailAddressRepository.findByUser(user));
-        List<ContactDto> contactNumbers = contactMapper.mapContactListToContactDtoList(phoneNumberRepository.findByUser(user));
-
-        return Stream
-                .of(contactEmails, contactNumbers)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
     }
 }

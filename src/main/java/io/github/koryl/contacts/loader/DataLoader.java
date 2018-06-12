@@ -39,7 +39,7 @@ public class DataLoader implements ApplicationRunner {
         this.phoneNumberRepository = phoneNumberRepository;
     }
 
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
 
         Map<User, List<? extends Contact>> userListMap = dataParser.parseUsersWithContacts(getDataFilePath());
 

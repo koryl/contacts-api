@@ -1,6 +1,5 @@
 package io.github.koryl.contacts.soap;
 
-import io.github.koryl.contacts.domain.dto.contact.ContactDto;
 import io.github.koryl.contacts.domain.dto.user.UserDto;
 import io.github.koryl.contacts.service.user.UserService;
 import io.github.koryl.contacts.soap.ws.Contact;
@@ -23,7 +22,7 @@ public class UserEndpoint {
 
     private static final String NAMESPACE_URI = "http://localhost:8080/users-ws";
 
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public UserEndpoint(UserService userService) {

@@ -1,0 +1,8 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:user="http://localhost:8080/users-ws">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <user:findPeopleByEmailRequest>
+            <user:value>**</user:value>
+        </user:findPeopleByEmailRequest>
+    </soapenv:Body>
+</soapenv:Envelope>

@@ -13,6 +13,7 @@ import io.github.koryl.contacts.domain.entity.contact.EmailAddress;
 import io.github.koryl.contacts.domain.entity.contact.PhoneNumber;
 import io.github.koryl.contacts.domain.entity.user.User;
 
+import io.github.koryl.contacts.service.contact.ContactOperations;
 import io.github.koryl.contacts.service.contact.ContactService;
 import io.github.koryl.contacts.service.contact.ContactServiceImpl;
 import org.assertj.core.util.Lists;
@@ -37,21 +38,20 @@ public class ContactServiceImplTest {
     private EmailAddress emailAddress;
     private PhoneNumber phoneNumber;
 
-
     @Before
     public void setUp() {
 
         UserRepository userRepository = mock(UserRepository.class);
         emailAddressRepository = mock(EmailAddressRepository.class);
         phoneNumberRepository = mock(PhoneNumberRepository.class);
+        ContactOperations contactOperations = new ContactOperations(emailAddressRepository, phoneNumberRepository);
         ContactFactory contactFactory = new ContactFactory();
         ContactDtoFactory contactDtoFactory = new ContactDtoFactory();
-        contactService = new ContactServiceImpl(userRepository, emailAddressRepository, phoneNumberRepository, contactFactory, contactDtoFactory);
+        contactService = new ContactServiceImpl(userRepository, emailAddressRepository, phoneNumberRepository, contactFactory, contactDtoFactory, contactOperations);
 
         testUser = new User(1, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL);
         emailAddress = new EmailAddress(0, EMAIL_ADDRESS_VALUE, testUser);
         phoneNumber = new PhoneNumber(0, PHONE_NUMBER_VALUE, testUser);
-
 
         given(userRepository.findById(1L)).willReturn(Optional.of(testUser));
     }

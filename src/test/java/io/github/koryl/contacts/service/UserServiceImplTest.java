@@ -11,6 +11,7 @@ import io.github.koryl.contacts.domain.dto.user.UserDto;
 import io.github.koryl.contacts.domain.entity.contact.EmailAddress;
 import io.github.koryl.contacts.domain.entity.contact.PhoneNumber;
 import io.github.koryl.contacts.domain.entity.user.User;
+import io.github.koryl.contacts.service.contact.ContactOperations;
 import io.github.koryl.contacts.service.user.UserService;
 import io.github.koryl.contacts.service.user.UserServiceImpl;
 import io.github.koryl.contacts.utilities.mapper.ContactMapper;
@@ -49,7 +50,8 @@ public class UserServiceImplTest {
         phoneNumberRepository = mock(PhoneNumberRepository.class);
         UserMapper userMapper = new UserMapper();
         ContactMapper contactMapper = new ContactMapper();
-        userService = new UserServiceImpl(userRepository, emailAddressRepository, phoneNumberRepository, userMapper, contactMapper);
+        ContactOperations contactOperations = new ContactOperations(emailAddressRepository, phoneNumberRepository);
+        userService = new UserServiceImpl(userRepository, emailAddressRepository, phoneNumberRepository, userMapper, contactMapper, contactOperations);
 
         testUser = new User(1, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, PESEL);
         testUserList = ImmutableList.of(testUser);

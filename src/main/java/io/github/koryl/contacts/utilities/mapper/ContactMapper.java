@@ -2,9 +2,12 @@ package io.github.koryl.contacts.utilities.mapper;
 
 import io.github.koryl.contacts.domain.dto.contact.ContactDto;
 import io.github.koryl.contacts.domain.dto.contact.ContactDtoFactory;
+import io.github.koryl.contacts.domain.dto.contact.EmailAddressDto;
 import io.github.koryl.contacts.domain.entity.contact.Contact;
+import io.github.koryl.contacts.domain.entity.contact.ContactFactory;
 import io.github.koryl.contacts.domain.entity.contact.EmailAddress;
 import io.github.koryl.contacts.domain.entity.contact.PhoneNumber;
+import io.github.koryl.contacts.domain.entity.user.User;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,6 +31,25 @@ public class ContactMapper {
                         return contactDtoFactory.getContactDto(EMAIL_ADDRESS, value);
                     } else if (contact instanceof PhoneNumber) {
                         return contactDtoFactory.getContactDto(PHONE_NUMBER, value);
+                    } else {
+                        throw new RuntimeException("Cannot map provided contact list - unknown type of contacts.");
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<Contact> mapContactDtoListToContactList(List<? extends ContactDto> contactDtoList, User user) {
+
+        ContactFactory contactFactory = new ContactFactory();
+
+        return contactDtoList
+                .stream()
+                .map(contactDto -> {
+                    String value = contactDto.getValue();
+                    if (contactDto instanceof EmailAddressDto) {
+                        return contactFactory.getContact(EMAIL_ADDRESS, value, user);
+                    } else if (contactDto instanceof PhoneNumber) {
+                        return contactFactory.getContact(PHONE_NUMBER, value, user);
                     } else {
                         throw new RuntimeException("Cannot map provided contact list - unknown type of contacts.");
                     }

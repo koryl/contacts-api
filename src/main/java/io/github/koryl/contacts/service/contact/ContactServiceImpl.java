@@ -10,17 +10,13 @@ import io.github.koryl.contacts.domain.entity.contact.EmailAddress;
 import io.github.koryl.contacts.domain.entity.contact.PhoneNumber;
 import io.github.koryl.contacts.domain.entity.user.User;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -30,17 +26,19 @@ public class ContactServiceImpl implements ContactService {
     private final EmailAddressRepository emailAddressRepository;
     private final PhoneNumberRepository phoneNumberRepository;
     private final UserRepository userRepository;
+    private final ContactOperations contactOperations;
     private final ContactFactory contactFactory;
     private final ContactDtoFactory contactDtoFactory;
 
     @Autowired
-    public ContactServiceImpl(UserRepository userRepository, EmailAddressRepository emailAddressRepository, PhoneNumberRepository phoneNumberRepository, ContactFactory contactFactory, ContactDtoFactory contactDtoFactory) {
+    public ContactServiceImpl(UserRepository userRepository, EmailAddressRepository emailAddressRepository, PhoneNumberRepository phoneNumberRepository, ContactFactory contactFactory, ContactDtoFactory contactDtoFactory, ContactOperations contactOperations) {
 
         this.userRepository = userRepository;
         this.emailAddressRepository = emailAddressRepository;
         this.phoneNumberRepository = phoneNumberRepository;
         this.contactFactory = contactFactory;
         this.contactDtoFactory = contactDtoFactory;
+        this.contactOperations = contactOperations;
     }
 
     @Transactional
@@ -51,8 +49,7 @@ public class ContactServiceImpl implements ContactService {
         List<EmailAddress> rawEmails = emailAddressRepository.findByUser(user);
         List<PhoneNumber> rawNumbers = phoneNumberRepository.findByUser(user);
 
-
-        return buildContactsFromEmailsAndNumbers(rawEmails, rawNumbers);
+        return contactOperations.buildContactsFromEmailsAndNumbers(rawEmails, rawNumbers);
     }
 
     @Transactional
@@ -61,10 +58,8 @@ public class ContactServiceImpl implements ContactService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with id: " + id + " not found."));
 
-        Contact contact = contactFactory.getContact(contactDto.getContactType());
-        contact.setValue(contactDto.getValue());
-        contact.setUser(user);
-        contact = saveContact(contact);
+        Contact contact = contactFactory.getContact(contactDto.getContactType(), contactDto.getValue(), user);
+        contact = contactOperations.saveContact(contact);
 
         ContactDto createdContact = contactDtoFactory.getContactDto(contactDto.getContactType(), contactDto.getValue());
         createdContact.setValue(contact.getValue());
@@ -93,7 +88,7 @@ public class ContactServiceImpl implements ContactService {
                 throw new RuntimeException("Unknown error occurred - check if contact type is correct.");
         }
         contact.setValue(contactDto.getValue());
-        contact = saveContact(contact);
+        contact = contactOperations.saveContact(contact);
 
         ContactDto updatedContact = contactDtoFactory.getContactDto(contactDto.getContactType(), contactDto.getValue());
         updatedContact.setValue(contact.getValue());
@@ -120,41 +115,6 @@ public class ContactServiceImpl implements ContactService {
         } else if (opContact.isPresent() && opContact.get() instanceof PhoneNumber) {
             PhoneNumber number = (PhoneNumber) opContact.get();
             phoneNumberRepository.delete(number);
-        }
-    }
-
-    private List<ContactDto> buildContactsFromEmailsAndNumbers(List<EmailAddress> emails, List<PhoneNumber> numbers) {
-
-        List<ContactDto> contactEmails = emails.stream()
-                .map(email -> new EmailAddressDto(email.getValue()))
-                .collect(Collectors.toList());
-
-        List<ContactDto> contactNumbers = numbers.stream()
-                .map(number -> new PhoneNumberDto(number.getValue()))
-                .collect(Collectors.toList());
-
-        return Stream.of(contactEmails, contactNumbers)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
-    Contact saveContact(Contact contact) {
-
-        try {
-            if (contact instanceof EmailAddress) {
-                EmailAddress emailAddress = (EmailAddress) contact;
-                return emailAddressRepository.save(emailAddress);
-
-            } else if (contact instanceof PhoneNumber) {
-                PhoneNumber phoneNumber = (PhoneNumber) contact;
-                return phoneNumberRepository.save(phoneNumber);
-
-            } else {
-                throw new RuntimeException("It was not possible to save contact in the repository. Check if type of contact is correct.");
-            }
-        } catch (ConstraintViolationException | DataIntegrityViolationException e) {
-            throw new RuntimeException("Provided contact already exist - cannot save contact.");
         }
     }
 }
