@@ -41,21 +41,19 @@ public class ContactXmlDataParser {
                 Element contactElement = (Element) node;
                 Element userElement = (Element) userNode;
                 Contact contact;
+                User user = parserHelper.buildUserFromElement(userElement);
+                String value = parserHelper.getTextFromElement(contactElement, "value");
 
                 switch (contactElement.getAttribute("contactType")) {
                     case "EMAIL_ADDRESS":
-                        contact = contactFactory.getContact(ContactType.EMAIL_ADDRESS);
+                        contact = contactFactory.getContact(ContactType.EMAIL_ADDRESS, value, user);
                         break;
                     case "PHONE_NUMBER":
-                        contact = contactFactory.getContact(ContactType.PHONE_NUMBER);
+                        contact = contactFactory.getContact(ContactType.PHONE_NUMBER, value, user);
                         break;
                     default:
                         throw new RuntimeException("Contact type was not recognized.");
                 }
-                contact.setValue(parserHelper.getTextFromElement(contactElement, "value"));
-                User user = parserHelper.buildUserFromElement(userElement);
-
-                contact.setUser(user);
                 contacts.add(contact);
             }
         }

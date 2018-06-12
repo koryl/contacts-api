@@ -1,7 +1,8 @@
 package io.github.koryl.contacts.rest;
 
 import io.github.koryl.contacts.domain.dto.user.UserDto;
-import io.github.koryl.contacts.service.UserService;
+import io.github.koryl.contacts.service.user.UserService;
+import io.github.koryl.contacts.service.user.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +17,12 @@ public class UserController {
     private final UserService userService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserServiceImpl userService) {
         this.userService = userService;
     }
 
     @GetMapping
-    public List<UserDto> allUsers() {
+    public List<UserDto> getAllUsers() {
 
         return userService.getAllUsers();
     }
@@ -33,6 +34,7 @@ public class UserController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public UserDto createUser(@Valid @RequestBody UserDto user) {
 
         return userService.createNewUser(user);
@@ -51,11 +53,16 @@ public class UserController {
         userService.deleteUserWithId(id);
     }
 
-
-    @GetMapping("/find")
+    @GetMapping("/findByBirthDayBetween")
     public List<UserDto> findPeopleByBirthDateBetween(@Valid @RequestParam(required = false) String fromDate,
                                                       @Valid @RequestParam(required = false) String toDate) {
 
         return userService.findPeopleByBirthDateBetween(fromDate, toDate);
+    }
+
+    @GetMapping("/findByEmail")
+    public List<UserDto> findPeopleByEmail(@Valid @RequestParam String email) {
+
+        return userService.findPeopleByEmail(email);
     }
 }

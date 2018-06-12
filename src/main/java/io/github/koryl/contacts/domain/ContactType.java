@@ -6,5 +6,5 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public enum ContactType {
 
     EMAIL_ADDRESS,
-    PHONE_NUMBER;
+    PHONE_NUMBER
 }

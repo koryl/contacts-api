@@ -1,0 +1,17 @@
+{
+  "firstName": "Test",
+  "lastName": "User",
+  "gender": "F",
+  "birthDate": "1975-05-30",
+  "pesel": "75063092802",
+  "contacts": [
+    {
+      "contactType": "EMAIL_ADDRESS",
+      "value": "test@test.com"
+    },
+    {
+      "contactType": "PHONE_NUMBER",
+      "value": "111111111"
+    }
+  ]
+}

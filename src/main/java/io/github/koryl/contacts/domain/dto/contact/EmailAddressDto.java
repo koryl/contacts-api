@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -15,14 +16,11 @@ public class EmailAddressDto implements ContactDto {
     private ContactType contactType = ContactType.EMAIL_ADDRESS;
 
     @Email
+    @NotEmpty
     private String value;
 
-    @NotNull
-    private long userId;
-
-    public EmailAddressDto(@Email String value, long userId) {
+    public EmailAddressDto(@Email String value) {
 
         this.value = value;
-        this.userId = userId;
     }
 }
